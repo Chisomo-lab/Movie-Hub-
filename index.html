@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Hub Pro</title>
+<style>
+body { margin:0; font-family:Arial,sans-serif; background:#111; color:#fff; }
+header { background:#e50914; padding:15px; text-align:center; font-size:28px; font-weight:bold; position:sticky; top:0; z-index:1000; }
+.category-row { margin:20px 0; }
+.category-row h2 { border-left:5px solid #e50914; padding-left:10px; cursor:pointer; }
+.movies { display:flex; overflow-x:auto; gap:10px; padding:10px; scroll-behavior:smooth; }
+.movie-card { min-width:160px; flex:0 0 auto; background:#222; border-radius:10px; padding:5px; text-align:center; }
+.movie-card img { width:100%; height:220px; object-fit:cover; border-radius:5px; }
+.movie-card h3 { font-size:14px; margin:5px 0; }
+.movie-card a { display:block; margin:3px 0; padding:5px; background:#e50914; color:#fff; border-radius:5px; text-decoration:none; font-size:12px; }
+.movie-card a:hover { background:#b00610; }
+</style>
+</head>
+<body>
+
+<header>🎬 Movie Hub Pro</header>
+<div id="content"></div>
+
+<script>
+// Categories and multiple sources
+const categories = {
+  "Action": ["feature_films","action"],
+  "Comedy": ["comedy","comedy_classics"],
+  "Horror": ["horror","classic_horror"],
+  "Animation": ["animationandcartoons","cartoons","classic_animation"],
+  "Anime": ["anime","anime_classics"]
+};
+
+// Display homepage with one representative movie per category
+async function loadHomePage(){
+  const content = document.getElementById("content");
+  content.innerHTML = "";
+
+  for(const [cat, collections] of Object.entries(categories)){
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "category-row";
+    rowDiv.id = cat;
+
+    const title = document.createElement("h2");
+    title.textContent = cat;
+    title.onclick = ()=>expandCategory(cat); // Expand on click
+    rowDiv.appendChild(title);
+
+    const moviesDiv = document.createElement("div");
+    moviesDiv.className = "movies";
+    rowDiv.appendChild(moviesDiv);
+    content.appendChild(rowDiv);
+
+    // Fetch 3 movies for homepage preview
+    const movies = await fetchMovies(collections, 0, 3);
+    movies.forEach(movie=>{
+      const card = createMovieCard(movie);
+      moviesDiv.appendChild(card);
+    });
+  }
+}
+
+// Fetch movies from multiple collections
+async function fetchMovies(collections, start=0, rows=12){
+  let allMovies = [];
+  for(const col of collections){
+    const url = `https://archive.org/advancedsearch.php?q=collection:(${col})+AND+mediatype:(movies)&fl[]=identifier&fl[]=title&fl[]=year&sort[]=year desc&output=json&rows=${rows}&start=${start}`;
+    try{
+      const res = await fetch(url);
+      const data = await res.json();
+      if(data.response.docs) allMovies = allMovies.concat(data.response.docs);
+    }catch(e){ console.log('Error fetching '+col,e); }
+  }
+  return allMovies;
+}
+
+// Create a movie card element
+function createMovieCard(movie){
+  const card = document.createElement("div");
+  card.className = "movie-card";
+  const identifier = movie.identifier;
+  const streamPage = `https://archive.org/details/${identifier}`;
+  const downloadUrl = `https://archive.org/download/${identifier}/${identifier}.mp4`;
+
+  card.innerHTML = `
+    <img src="https://archive.org/services/img/${identifier}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/160x220?text=No+Image'">
+    <h3>${movie.title||"Untitled"} (${movie.year||"N/A"})</h3>
+    <a href="${streamPage}" target="_blank">Stream</a>
+    <a href="${downloadUrl}" target="_blank">Download</a>
+  `;
+  return card;
+}
+
+// Expand category to show more movies
+async function expandCategory(cat){
+  const rowDiv = document.getElementById(cat);
+  const moviesDiv = rowDiv.querySelector(".movies");
+  moviesDiv.innerHTML=""; // Clear preview
+
+  const collections = categories[cat];
+  const movies = await fetchMovies(collections,0,12); // Fetch 12 movies for expansion
+  if(movies.length===0){
+    moviesDiv.innerHTML="<p style='color:#aaa'>No movies found.</p>";
+    return;
+  }
+  movies.forEach(movie=>{
+    const card = createMovieCard(movie);
+    moviesDiv.appendChild(card);
+  });
+}
+
+loadHomePage();
+</script>
+</body>
+</html>
