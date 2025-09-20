@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; margin:0; padding:0; }
+    header { background:#e50914; padding:15px; text-align:center; font-size:24px; font-weight:bold; position:sticky; top:0; z-index:1000; }
+    nav { display:flex; justify-content:center; background:#000; padding:10px; position:sticky; top:55px; z-index:999; }
+    nav a { color:#fff; margin:0 10px; text-decoration:none; font-weight:bold; }
+    nav a:hover { color:#e50914; }
+    .category { margin:20px; }
+    .category h2 { border-left:5px solid #e50914; padding-left:10px; margin-bottom:10px; }
+    .movies { display:flex; overflow-x:auto; gap:15px; padding:10px 0; }
+    .movie-card { background:#222; border-radius:10px; min-width:180px; flex:0 0 auto; padding:10px; text-align:center; }
+    .movie-card img { width:100%; height:250px; object-fit:cover; border-radius:8px; }
+    .movie-card h3 { font-size:14px; margin:10px 0 5px; }
+    .movie-card a { display:inline-block; margin:5px; padding:5px 10px; background:#e50914; color:#fff; border-radius:5px; text-decoration:none; font-size:12px; cursor:pointer; }
+    .movie-card a:hover { background:#b00610; }
+    #videoModal { display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; flex-direction:column; }
+    #videoModal video { max-width:90%; max-height:70%; border-radius:10px; }
+    #videoModal button { margin-top:15px; padding:10px 20px; border:none; background:#e50914; color:#fff; font-size:16px; border-radius:8px; cursor:pointer; }
+    #videoModal button:hover { background:#b00610; }
+  </style>
+</head>
+<body>
+  <header>🎬 Movie Hub Pro</header>
+  <nav>
+    <a href="#action">Action</a>
+    <a href="#comedy">Comedy</a>
+    <a href="#horror">Horror</a>
+    <a href="#animation">Animation</a>
+    <a href="#anime">Anime</a>
+    <a href="#sci-fi">Sci-Fi</a>
+  </nav>
+
+  <div id="content"></div>
+
+  <div id="videoModal">
+    <video id="player" controls></video>
+    <button onclick="closePlayer()">Close</button>
+  </div>
+
+  <script>
+    // Categories mapped to Internet Archive collections
+    const categories = {
+      "action": "feature_films",
+      "comedy": "comedy",
+      "horror": "horror",
+      "animation": "animationandcartoons",
+      "anime": "anime",
+      "sci-fi": "sciencefiction"
+    };
+
+    async function fetchMovies(collection, rows=12) {
+      const url = `https://archive.org/advancedsearch.php?q=collection:(${collection})+AND+mediatype:(movies)&fl[]=identifier&fl[]=title&fl[]=year&output=json&rows=${rows}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.response.docs;
+    }
+
+    async function loadCategories() {
+      const content = document.getElementById("content");
+      content.innerHTML = "";
+
+      for (const [id, collection] of Object.entries(categories)) {
+        const movies = await fetchMovies(collection, 15);
+
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className = "category";
+        categoryDiv.id = id;
+
+        const title = document.createElement("h2");
+        title.textContent = id.toUpperCase();
+        categoryDiv.appendChild(title);
+
+        const moviesDiv = document.createElement("div");
+        moviesDiv.className = "movies";
+
+        movies.forEach(movie => {
+          const card = document.createElement("div");
+          card.className = "movie-card";
+          const identifier = movie.identifier;
+          const streamUrl = `https://archive.org/download/${identifier}/${identifier}.mp4`;
+          const downloadUrl = streamUrl;
+
+          card.innerHTML = `
+            <img src="https://archive.org/services/img/${identifier}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/180x250?text=No+Image'">
+            <h3>${movie.title || "Untitled"} (${movie.year || "N/A"})</h3>
+            <a onclick="playMovie('${streamUrl}')">Stream</a>
+            <a href="${downloadUrl}" target="_blank">Download</a>
+          `;
+          moviesDiv.appendChild(card);
+        });
+
+        categoryDiv.appendChild(moviesDiv);
+        content.appendChild(categoryDiv);
+      }
+    }
+
+    function playMovie(url) {
+      const modal = document.getElementById("videoModal");
+      const player = document.getElementById("player");
+      player.src = url;
+      modal.style.display = "flex";
+      player.play();
+    }
+
+    function closePlayer() {
+      const modal = document.getElementById("videoModal");
+      const player = document.getElementById("player");
+      player.pause();
+      player.src = "";
+      modal.style.display = "none";
+    }
+
+    loadCategories();
+  </script>
+</body>
+</html>
