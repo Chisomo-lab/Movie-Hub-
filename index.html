@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 Movie Hub Pro</title>
+  <style>
+    body { font-family: Arial; background: #111; color: #fff; margin:0; padding:0; }
+    header { background:#e50914; padding:15px; text-align:center; font-size:24px; font-weight:bold; }
+    .search-bar { text-align:center; margin:15px; }
+    .search-bar input { width:80%; padding:10px; border-radius:8px; border:none; font-size:16px; }
+    .category { margin:20px; }
+    .category h2 { border-left:5px solid #e50914; padding-left:10px; margin-bottom:10px; cursor:pointer; }
+    .movies { display:flex; overflow-x:auto; gap:15px; padding:10px 0; scroll-behavior: smooth; display:none; }
+    .movie-card { background:#222; border-radius:10px; min-width:160px; flex:0 0 auto; padding:10px; text-align:center; }
+    .movie-card img { width:100%; height:220px; object-fit:cover; border-radius:8px; transition: transform 0.3s; }
+    .movie-card img:hover { transform: scale(1.05); }
+    .movie-card h3 { font-size:14px; margin:10px 0 5px; }
+    .movie-card a { display:inline-block; margin:5px; padding:5px 10px; background:#e50914; color:#fff; border-radius:5px; text-decoration:none; font-size:12px; cursor:pointer; }
+    .movie-card a:hover { background:#b00610; }
+    #videoModal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; flex-direction:column; }
+    #videoModal video { max-width:90%; max-height:70%; border-radius:10px; }
+    #videoModal button { margin-top:15px; padding:10px 20px; border:none; background:#e50914; color:#fff; font-size:16px; border-radius:8px; cursor:pointer; }
+    #videoModal button:hover { background:#b00610; }
+    #ad-banner { width:100%; height:50px; background:#333; text-align:center; line-height:50px; font-size:14px; position:fixed; bottom:0; left:0; z-index:999; }
+    .ad-placeholder { background:#444; margin:10px 0; padding:5px; text-align:center; font-size:12px; border-radius:5px; }
+  </style>
+</head>
+<body>
+  <header>🎬 Movie Hub Pro</header>
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Search movies...">
+  </div>
+  <div id="content"></div>
+
+  <!-- Video Modal -->
+  <div id="videoModal">
+    <video id="player" controls></video>
+    <button onclick="closePlayer()">Close</button>
+  </div>
+
+  <!-- Banner Ad -->
+  <div id="ad-banner">Ad Placeholder (Banner)</div>
+
+  <script>
+    // 🔑 Use RAW GitHub link to movies.json
+    const apiUrl = "https://raw.githubusercontent.com/Chisomo-lab/Movie-Hub-/main/movies.json";
+    const BATCH_SIZE = 10;
+
+    async function loadMovies() {
+      try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        renderCategories(data.categories);
+      } catch (err) {
+        console.error("Error loading movies:", err);
+        document.getElementById("content").innerHTML = "<p style='text-align:center;margin-top:50px;'>❌ Could not load movies. Check JSON link.</p>";
+      }
+    }
+
+    function renderCategories(categories) {
+      const contentDiv = document.getElementById("content");
+      contentDiv.innerHTML = "";
+
+      categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.classList.add("category");
+
+        const title = document.createElement("h2");
+        title.textContent = category.name;
+        categoryDiv.appendChild(title);
+
+        const moviesGrid = document.createElement("div");
+        moviesGrid.classList.add("movies");
+        moviesGrid.dataset.loaded = 0;
+
+        // Expand/collapse categories
+        title.addEventListener("click", () => {
+          moviesGrid.style.display = moviesGrid.style.display === "flex" ? "none" : "flex";
+          if (moviesGrid.dataset.loaded == 0) loadMoreMovies(category, moviesGrid);
+        });
+
+        // Infinite scroll
+        moviesGrid.addEventListener("scroll", () => {
+          if (moviesGrid.scrollLeft + moviesGrid.clientWidth >= moviesGrid.scrollWidth - 50) {
+            loadMoreMovies(category, moviesGrid);
+          }
+        });
+
+        categoryDiv.appendChild(moviesGrid);
+        contentDiv.appendChild(categoryDiv);
+      });
+
+      // Search
+      document.getElementById("search").addEventListener("input", function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const movieCards = document.querySelectorAll(".movie-card");
+        movieCards.forEach(card => {
+          const title = card.querySelector("h3").textContent.toLowerCase();
+          card.style.display = title.includes(searchTerm) ? "block" : "none";
+        });
+      });
+    }
+
+    function loadMoreMovies(category, grid) {
+      const start = parseInt(grid.dataset.loaded);
+      const end = Math.min(start + BATCH_SIZE, category.movies.length);
+
+      for (let i = start; i < end; i++) {
+        const movie = category.movies[i];
+        const card = document.createElement("div");
+        card.classList.add("movie-card");
+        card.innerHTML = `
+          <img src="${movie.thumbnail}" alt="${movie.title}">
+          <h3>${movie.title} (${movie.year})</h3>
+          <a onclick="showInterstitial('${movie.stream_url}', 'play')">Stream</a>
+          <a onclick="showInterstitial('${movie.download_url}', 'download')">Download</a>
+          <div class="ad-placeholder">Interstitial Ad Placeholder</div>
+        `;
+        grid.appendChild(card);
+      }
+      grid.dataset.loaded = end;
+    }
+
+    // 🎥 Video Modal
+    function playMovie(url) {
+      const modal = document.getElementById("videoModal");
+      const player = document.getElementById("player");
+      player.src = url;
+      modal.style.display = "flex";
+      player.play();
+    }
+
+    function closePlayer() {
+      const modal = document.getElementById("videoModal");
+      const player = document.getElementById("player");
+      player.pause();
+      player.src = "";
+      modal.style.display = "none";
+    }
+
+    // 🎬 Interstitial logic
+    function showInterstitial(url, action) {
+      alert("Interstitial Ad (Simulation)");
+      if (action === "play") playMovie(url);
+      else window.open(url, "_blank");
+    }
+
+    loadMovies();
+  </script>
+</body>
+</html>
