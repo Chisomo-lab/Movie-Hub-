@@ -1,0 +1,71 @@
+{
+  "categories": [
+    {
+      "name": "Action",
+      "movies": [
+        {
+          "title": "The Last Man on Earth (1964)",
+          "year": "1964",
+          "thumbnail": "https://m.media-amazon.com/images/M/MV5B.jpg",
+          "stream_url": "https://publicdomainmovie.net/movie/the-last-man-on-earth",
+          "download_url": "https://publicdomainmovie.net/download/the-last-man-on-earth.mp4"
+        },
+        {
+          "title": "D.O.A. (1950)",
+          "year": "1950",
+          "thumbnail": "https://m.media-amazon.com/images/M/MV5C.jpg",
+          "stream_url": "https://publicdomainmovie.net/movie/doa",
+          "download_url": "https://publicdomainmovie.net/download/doa.mp4"
+        }
+      ]
+    },
+    {
+      "name": "Comedy",
+      "movies": [
+        {
+          "title": "His Girl Friday (1940)",
+          "year": "1940",
+          "thumbnail": "https://m.media-amazon.com/images/M/MV5D.jpg",
+          "stream_url": "https://publicdomainmovie.net/movie/his-girl-friday",
+          "download_url": "https://publicdomainmovie.net/download/his-girl-friday.mp4"
+        }
+      ]
+    },
+    {
+      "name": "Horror",
+      "movies": [
+        {
+          "title": "Night of the Living Dead (1968)",
+          "year": "1968",
+          "thumbnail": "https://m.media-amazon.com/images/M/MV5E.jpg",
+          "stream_url": "https://publicdomainmovie.net/movie/night-of-the-living-dead",
+          "download_url": "https://publicdomainmovie.net/download/night-of-the-living-dead.mp4"
+        }
+      ]
+    },
+    {
+      "name": "Anime",
+      "movies": [
+        {
+          "title": "Astro Boy (1963)",
+          "year": "1963",
+          "thumbnail": "https://upload.wikimedia.org/wikipedia/en/thumb/0/01/AstroBoy.jpg/220px-AstroBoy.jpg",
+          "stream_url": "https://publicdomainmovie.net/movie/astro-boy",
+          "download_url": "https://publicdomainmovie.net/download/astro-boy.mp4"
+        }
+      ]
+    },
+    {
+      "name": "Animation",
+      "movies": [
+        {
+          "title": "Gulliver's Travels (1939)",
+          "year": "1939",
+          "thumbnail": "https://upload.wikimedia.org/wikipedia/en/thumb/3/33/Gulliverstravels39.jpg/220px-Gulliverstravels39.jpg",
+          "stream_url": "https://publicdomainmovie.net/movie/gullivers-travels",
+          "download_url": "https://publicdomainmovie.net/download/gullivers-travels.mp4"
+        }
+      ]
+    }
+  ]
+}
