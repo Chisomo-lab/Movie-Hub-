@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Hub Pro</title>
+<style>
+body { font-family: Arial,sans-serif; background:#111; color:#fff; margin:0; padding:0; }
+nav { background:#000; display:flex; justify-content:space-between; align-items:center; padding:10px 20px; position:sticky; top:0; z-index:1000; }
+nav .logo { font-size:20px; font-weight:bold; color:#e50914; }
+nav .menu { display:flex; gap:20px; }
+nav .menu a { color:#fff; text-decoration:none; font-size:16px; transition: color 0.3s; }
+nav .menu a:hover { color:#e50914; }
+#searchBar { width:250px; padding:6px; border-radius:5px; border:none; }
+
+.category-row { margin:20px; }
+.category-title { font-size:18px; margin-bottom:10px; font-weight:bold; }
+.movie-carousel { display:flex; overflow-x:auto; gap:10px; padding-bottom:10px; }
+.movie-carousel::-webkit-scrollbar { height:8px; }
+.movie-carousel::-webkit-scrollbar-thumb { background:#e50914; border-radius:4px; }
+.movieCard { flex:0 0 auto; width:150px; background:#1a1a1a; border-radius:10px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.6); font-size:12px; }
+.movieCard img { width:100%; height:200px; object-fit:cover; }
+.movieCard h3 { font-size:13px; margin:5px 0; text-align:center; color:#fff; }
+.movieCard p { font-size:11px; color:#ccc; text-align:center; margin:2px 5px 5px 5px; height:36px; overflow:hidden; }
+.movieCard .btn { display:block; text-align:center; margin:3px 0; font-size:11px; padding:4px 6px; border-radius:5px; background:#e50914; color:#fff; text-decoration:none; }
+.movieCard .btn:hover { background:#b20710; }
+</style>
+</head>
+<body>
+
+<!-- Adsense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290" crossorigin="anonymous"></script>
+
+<nav>
+  <div class="logo">🎬 MovieHub Pro</div>
+  <div class="menu">
+    <a href="#" onclick="window.scrollTo({top:0, behavior:'smooth'})">Home</a>
+    <a href="#mainContent">Categories</a>
+    <a href="#" onclick="document.getElementById('searchBar').focus()">Search</a>
+  </div>
+  <input type="text" id="searchBar" placeholder="Search movies...">
+</nav>
+
+<main id="mainContent">
+  <div id="categoryRows"></div>
+</main>
+
+<script>
+// ===== Local Movies =====
+const categories = [
+  {name:"Animation/Anime", movies:[
+    {title:"Popeye", id:"popeye-1933-1939", description:"Classic Popeye episodes", thumb:"https://archive.org/services/img/popeye-1933-1939"},
+    {title:"Spider-Man (1967)", id:"Spider-Man-67-Collection", description:"All 52 episodes", thumb:"https://archive.org/services/img/Spider-Man-67-Collection"},
+    {title:"Tom & Jerry", id:"tomandjerry-completemgmcollection_202312", description:"All 161 episodes", thumb:"https://archive.org/services/img/tomandjerry-completemgmcollection_202312"},
+    {title:"Looney Tunes", id:"the-looney-tunes-show_202405", description:"All episodes", thumb:"https://archive.org/services/img/the-looney-tunes-show_202405"},
+    {title:"Mickey Mouse", id:"mickey-mouse-works-s1", description:"Season 1", thumb:"https://archive.org/services/img/mickey-mouse-works-s1"}
+  ]},
+  {name:"Action", movies:[
+    {title:"The Black Pirate", id:"the-black-pirate-1926", description:"Classic swashbuckler", thumb:"https://archive.org/services/img/the-black-pirate-1926"},
+    {title:"Kung Fury", id:"kung-fury-2015", description:"Over-the-top action short", thumb:"https://archive.org/services/img/kung-fury-2015"},
+    {title:"The Last Dragon", id:"the-last-dragon-1985", description:"Martial arts action", thumb:"https://archive.org/services/img/the-last-dragon-1985"},
+    {title:"Captain Marvel (1941)", id:"captain-marvel-serial", description:"Classic serial", thumb:"https://archive.org/services/img/captain-marvel-serial"},
+    {title:"G-Men", id:"g-men-1935", description:"Crime action classic", thumb:"https://archive.org/services/img/g-men-1935"}
+  ]}
+];
+
+// ===== Render Categories =====
+function renderCategories(){
+  const categoryRows = document.getElementById("categoryRows");
+  categoryRows.innerHTML = "";
+  categories.forEach(cat=>{
+    const rowDiv = document.createElement("div");
+    rowDiv.className="category-row";
+    rowDiv.innerHTML=`<div class="category-title">${cat.name}</div><div class="movie-carousel"></div>`;
+    categoryRows.appendChild(rowDiv);
+
+    const carousel = rowDiv.querySelector(".movie-carousel");
+    cat.movies.forEach(movie=>{
+      const card = document.createElement("div");
+      card.className="movieCard";
+      card.innerHTML = `<img src="${movie.thumb}" alt="${movie.title}">
+        <h3>${movie.title}</h3>
+        <p>${movie.description}</p>
+        <a class="btn" target="_blank" href="https://archive.org/details/${movie.id}">Stream</a>
+        <a class="btn" target="_blank" href="https://archive.org/download/${movie.id}">Download</a>`;
+      carousel.appendChild(card);
+    });
+  });
+}
+
+// ===== Search Function =====
+let archiveQuery="", archivePage=1, isArchiveLoading=false;
+
+document.getElementById("searchBar").addEventListener("keypress", function(e){
+  if(e.key==="Enter"){
+    const query = this.value.trim().toLowerCase();
+    let foundMovies = [];
+    categories.forEach(cat=>{
+      cat.movies.forEach(movie=>{
+        if(movie.title.toLowerCase().includes(query)) foundMovies.push({...movie, category:cat.name});
+      });
+    });
+
+    if(foundMovies.length>0){
+      renderSearchResults(foundMovies,"Search Results");
+    } else {
+      archiveQuery=query; archivePage=1; isArchiveLoading=false;
+      fetchArchiveResults();
+    }
+  }
+});
+
+function renderSearchResults(movies,title="Search Results"){
+  const categoryRows = document.getElementById("categoryRows");
+  categoryRows.innerHTML = "";
+  const rowDiv = document.createElement("div");
+  rowDiv.className="category-row";
+  rowDiv.innerHTML=`<div class="category-title">${title}</div><div class="movie-carousel"></div>`;
+  categoryRows.appendChild(rowDiv);
+  const carousel = rowDiv.querySelector(".movie-carousel");
+  movies.forEach(movie=>{
+    const card = document.createElement("div");
+    card.className="movieCard";
+    card.innerHTML = `<img src="${movie.thumb || 'https://archive.org/services/img/'+movie.identifier}" alt="${movie.title}">
+      <h3>${movie.title}</h3>
+      <a class="btn" target="_blank" href="https://archive.org/details/${movie.id || movie.identifier}">Stream</a>
+      <a class="btn" target="_blank" href="https://archive.org/download/${movie.id || movie.identifier}">Download</a>`;
+    carousel.appendChild(card);
+  });
+
+  carousel.addEventListener("scroll", ()=>{
+    if(carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 50){
+      loadMoreArchiveResults(carousel);
+    }
+  }, { once:true });
+}
+
+// ===== Archive.org Fetch & Infinite Scroll =====
+function fetchArchiveResults(){
+  fetch(`https://archive.org/advancedsearch.php?q=${archiveQuery}+collection:movies&fl[]=identifier,title&rows=20&page=${archivePage}&output=json`)
+  .then(res=>res.json())
+  .then(data=>{
+    const docs = data.response.docs;
+    const archiveMovies = docs.map(d=>({title:d.title, identifier:d.identifier}));
+    renderSearchResults(archiveMovies,"Archive.org Results");
+  });
+}
+
+function loadMoreArchiveResults(carousel){
+  if(isArchiveLoading) return;
+  isArchiveLoading=true; archivePage++;
+  fetch(`https://archive.org/advancedsearch.php?q=${archiveQuery}+collection:movies&fl[]=identifier,title&rows=20&page=${archivePage}&output=json`)
+  .then(res=>res.json())
+  .then(data=>{
+    const docs = data.response.docs;
+    const archiveMovies = docs.map(d=>({title:d.title, identifier:d.identifier}));
+    archiveMovies.forEach(movie=>{
+      const card = document.createElement("div");
+      card.className="movieCard";
+      card.innerHTML=`<img src="https://archive.org/services/img/${movie.identifier}" alt="${movie.title}">
+        <h3>${movie.title}</h3>
+        <a class="btn" target="_blank" href="https://archive.org/details/${movie.identifier}">Stream</a>
+        <a class="btn" target="_blank" href="https://archive.org/download/${movie.identifier}">Download</a>`;
+      carousel.appendChild(card);
+    });
+    isArchiveLoading=false;
+    if(archiveMovies.length>0){
+      carousel.addEventListener("scroll", ()=>{
+        if(carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 50){
+          loadMoreArchiveResults(carousel);
+        }
+      }, { once:true });
+    }
+  });
+}
+
+// ===== Initialize =====
+renderCategories();
+</script>
+</body>
+</html>
