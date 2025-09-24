@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Navigation Bar */
+    nav {
+      background: #000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    nav .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #e50914;
+    }
+    nav .menu {
+      display: flex;
+      gap: 20px;
+    }
+    nav .menu a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    nav .menu a:hover {
+      color: #e50914;
+    }
+    #searchBar {
+      width: 250px;
+      padding: 6px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    /* Category Row Backgrounds */
+    .category-row {
+      position: relative;
+      margin-bottom: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .category-row::before {
+      content: "";
+      position: absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background: rgba(0,0,0,0.6);
+      z-index:0;
+    }
+    .category-title {
+      color: #fff;
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      position: relative;
+      z-index:1;
+    }
+    .movie-carousel {
+      display: flex;
+      overflow-x: auto;
+      gap: 15px;
+      padding-bottom: 10px;
+      position: relative;
+      z-index:1;
+    }
+    .movie-carousel::-webkit-scrollbar {
+      height: 8px;
+    }
+    .movie-carousel::-webkit-scrollbar-thumb {
+      background: #e50914;
+      border-radius: 4px;
+    }
+
+    /* Movie Card */
+    .movieCard {
+      flex: 0 0 auto;
+      width: 180px;
+      background: #1a1a1a;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .movieCard img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+    .movieCard h3 {
+      font-size: 14px;
+      margin: 5px 0;
+      text-align: center;
+      color: #fff;
+    }
+    .movieCard .btn {
+      display: block;
+      text-align: center;
+      margin: 5px 0;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 5px;
+      background: #e50914;
+      color: #fff;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .movieCard .btn:hover {
+      background: #b20710;
+    }
+    .movieCard:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <!-- AdSense Script -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290" crossorigin="anonymous"></script>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="logo">🎬 MovieHub Pro</div>
+    <div class="menu">
+      <a href="#" onclick="window.scrollTo({top:0, behavior:'smooth'})">Home</a>
+      <a href="#mainContent">Categories</a>
+      <a href="#" onclick="document.getElementById('searchBar').focus()">Search</a>
+    </div>
+    <input type="text" id="searchBar" placeholder="Search movies...">
+  </nav>
+
+  <!-- Main Content -->
+  <main id="mainContent">
+
+    <!-- Top Banner Ad -->
+    <div style="text-align:center; margin:15px 0;">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-3798659133542290"
+           data-ad-slot="634626837"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+
+    <!-- Category Rows -->
+    <div id="categoryRows"></div>
+
+    <!-- Bottom Banner Ad -->
+    <div style="text-align:center; margin:15px 0;">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-3798659133542290"
+           data-ad-slot="INSERT_BOTTOM_SLOT_HERE"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </main>
+
+  <!-- JavaScript -->
+  <script>
+    const categories = [
+      { name: "Action", query: "action", thumb: "https://i.imgur.com/7qW9bJP.jpg" },
+      { name: "Comedy", query: "comedy", thumb: "https://i.imgur.com/1xVJc4x.jpg" },
+      { name: "Horror", query: "horror", thumb: "https://i.imgur.com/5RkN1zL.jpg" },
+      { name: "Drama", query: "drama", thumb: "https://i.imgur.com/2Xp4wzK.jpg" },
+      { name: "Romance", query: "romance", thumb: "https://i.imgur.com/Ev3Zzv9.jpg" },
+      { name: "Animation/Anime", query: "animation OR cartoon OR anime", thumb: "https://i.imgur.com/QwzLhA2.jpg" },
+      { name: "Sci-Fi", query: "sci-fi", thumb: "https://i.imgur.com/6ZJ8p9B.jpg" },
+      { name: "Documentary", query: "documentary", thumb: "https://i.imgur.com/3yL9fVw.jpg" }
+    ];
+
+    const categoryRows = document.getElementById("categoryRows");
+    const searchBar = document.getElementById("searchBar");
+
+    categories.forEach(cat => {
+      const rowDiv = document.createElement("div");
+      rowDiv.className = "category-row";
+      rowDiv.style.backgroundImage = `url(${cat.thumb})`;
+      rowDiv.innerHTML = `<div class="category-title">${cat.name}</div>
+                          <div class="movie-carousel" id="carousel-${cat.query}"></div>`;
+      categoryRows.appendChild(rowDiv);
+
+      fetchCategoryMovies(cat.query, `carousel-${cat.query}`);
+    });
+
+    async function fetchCategoryMovies(query, carouselId) {
+      try {
+        const res = await fetch(`https://archive.org/advancedsearch.php?q=(${query})+AND+collection:(feature_films OR animation OR cartoons)&fl[]=identifier,title&rows=12&page=1&output=json`);
+        const data = await res.json();
+        const carousel = document.getElementById(carouselId);
+
+        data.response.docs.forEach(movie => {
+          const card = document.createElement("div");
+          card.className = "movieCard";
+          const thumb = `https://archive.org/services/img/${movie.identifier}`;
+          card.innerHTML = `
+            <img src="${thumb}" alt="${movie.title}">
+            <h3>${movie.title}</h3>
+            <a class="btn" target="_blank" href="https://archive.org/details/${movie.identifier}">Stream</a>
+            <a class="btn" target="_blank" href="https://archive.org/download/${movie.identifier}">Download</a>
+          `;
+          carousel.appendChild(card);
+        });
+      } catch (err) {
+        console.log(`Failed to load ${query} movies`, err);
+      }
+    }
+
+    // Search functionality
+    searchBar.addEventListener("keypress", (e) => {
+      if(e.key === "Enter") {
+        const query = searchBar.value.trim();
+        if(!query) return;
+        categoryRows.innerHTML = "";
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "category-row";
+        rowDiv.style.backgroundColor = "#111"; // plain background for search
+        rowDiv.innerHTML = `<div class="category-title">Search: ${query}</div>
+                            <div class="movie-carousel" id="carousel-search"></div>`;
+        categoryRows.appendChild(rowDiv);
+        fetchCategoryMovies(query, "carousel-search");
+      }
+    });
+  </script>
+</body>
+</html>
