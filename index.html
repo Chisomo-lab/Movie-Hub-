@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Hub Pro</title>
+
+<!-- Adsense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+crossorigin="anonymous"></script>
+
+<style>
+body {font-family: Arial, sans-serif; background:#111; color:#fff; margin:0; padding:0;}
+nav {background:#000; display:flex; justify-content:space-between; align-items:center; padding:10px 20px; position:sticky; top:0; z-index:1000;}
+nav .logo {font-size:20px; font-weight:bold; color:#e50914;}
+nav .menu {display:flex; gap:20px;}
+nav .menu a {color:#fff; text-decoration:none; font-size:16px; transition: color 0.3s;}
+nav .menu a:hover {color:#e50914;}
+#searchBar {width:250px; padding:6px; border-radius:5px; border:none;}
+#categories {display:flex; justify-content:center; flex-wrap:wrap; background:#222; padding:10px; gap:10px; position:sticky; top:50px; z-index:999;}
+.cat-btn {background:#e50914; color:#fff; border:none; padding:8px 14px; border-radius:20px; cursor:pointer; font-size:14px;}
+.cat-btn:hover {background:#b20710;}
+.category-row {margin:20px 0;}
+.category-title {font-size:20px; margin-left:20px; margin-bottom:10px;}
+.movie-row {display:flex; overflow-x:auto; gap:15px; padding-left:20px; scroll-behavior:smooth;}
+.movieCard {background:#222; min-width:180px; flex-shrink:0; padding:10px; border-radius:10px; text-align:center; box-shadow:0 4px 8px rgba(0,0,0,0.6); transition:transform 0.2s;}
+.movieCard:hover {transform:scale(1.05);}
+.movieCard img {width:100%; height:250px; object-fit:cover; border-radius:5px;}
+.movieCard h3 {font-size:16px; margin:10px 0 5px 0; color:#fff;}
+.movieCard p {font-size:13px; color:#bbb; margin-bottom:10px; height:36px; overflow:hidden; text-overflow:ellipsis;}
+.btn {display:inline-block; padding:6px 12px; margin:4px; border:none; border-radius:5px; background:#e50914; color:#fff; cursor:pointer; text-decoration:none; font-size:13px;}
+.btn:hover {background:#b20710;}
+.ads-container {margin:20px auto; text-align:center;}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo">🎬 MovieHub Pro</div>
+<div class="menu">
+<a href="#" onclick="loadAllCategories()">Home</a>
+<a href="#categories">Categories</a>
+<a href="#" onclick="document.getElementById('searchBar').focus()">Search</a>
+</div>
+<input type="text" id="searchBar" placeholder="Search movies...">
+</nav>
+
+<div id="categories">
+<button class="cat-btn" onclick="scrollToCategory('Cartoons')">Cartoons</button>
+<button class="cat-btn" onclick="scrollToCategory('Anime')">Anime</button>
+<button class="cat-btn" onclick="scrollToCategory('Action')">Action</button>
+<button class="cat-btn" onclick="scrollToCategory('Comedy')">Comedy</button>
+<button class="cat-btn" onclick="scrollToCategory('Horror')">Horror</button>
+<button class="cat-btn" onclick="scrollToCategory('Drama')">Drama</button>
+<button class="cat-btn" onclick="scrollToCategory('Romance')">Romance</button>
+<button class="cat-btn" onclick="scrollToCategory('Sci-Fi')">Sci-Fi</button>
+<button class="cat-btn" onclick="scrollToCategory('Documentary')">Documentary</button>
+</div>
+
+<div class="ads-container">
+<ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-3798659133542290"
+data-ad-slot="634626837"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<main id="mainContent"></main>
+
+<div class="ads-container">
+<ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-3798659133542290"
+data-ad-slot="634626837"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<script>
+const mainContent = document.getElementById("mainContent");
+const searchBar = document.getElementById("searchBar");
+
+// Categories
+const categories = ['Cartoons','Anime','Action','Comedy','Horror','Drama','Romance','Sci-Fi','Documentary'];
+
+// Preloaded movies (7 each as example)
+const preloadedMovies = {
+'Cartoons':[ {id:'spiderman_cartoon_001', title:'Spider-Man', desc:'Classic Cartoon'}, {id:'popeye_001', title:'Popeye', desc:'Old Cartoon'}, {id:'tom_jerry_001', title:'Tom & Jerry', desc:'Cartoon'}, {id:'bugs_bunny_001', title:'Bugs Bunny', desc:'Cartoon'}, {id:'doraemon_001', title:'Doraemon', desc:'Anime Cartoon'}, {id:'nemo_001', title:'Finding Nemo', desc:'Cartoon'}, {id:'scoobydoo_001', title:'Scooby-Doo', desc:'Cartoon'} ],
+'Anime':[ {id:'astro_boy_001', title:'Astro Boy', desc:'Classic Anime'}, {id:'kimba_001', title:'Kimba', desc:'Anime'}, {id:'dragonball_001', title:'Dragon Ball', desc:'Anime'}, {id:'naruto_001', title:'Naruto', desc:'Anime'}, {id:'onepiece_001', title:'One Piece', desc:'Anime'}, {id:'pokemon_001', title:'Pokemon', desc:'Anime'}, {id:'sailormoon_001', title:'Sailor Moon', desc:'Anime'} ],
+'Action':[ /* 7+ action */ ],
+'Comedy':[ /* 7+ comedy */ ],
+'Horror':[ /* 7+ horror */ ],
+'Drama':[ /* 7+ drama */ ],
+'Romance':[ /* 7+ romance */ ],
+'Sci-Fi':[ /* 7+ sci-fi */ ],
+'Documentary':[ /* 7+ documentaries */ ]
+};
+
+// Track pages per category for infinite scroll
+const categoryPages = {};
+categories.forEach(c => categoryPages[c] = 1);
+
+// Render category row
+function renderCategoryRow(cat, movies){
+const rowContainer = document.createElement('div');
+rowContainer.className='category-row';
+rowContainer.id=cat;
+rowContainer.innerHTML=`<div class="category-title">${cat}</div><div class="movie-row" id="row-${cat}"></div>`;
+mainContent.appendChild(rowContainer);
+
+const rowDiv = document.getElementById(`row-${cat}`);
+movies.forEach(m=>{
+const card=document.createElement('div');
+card.className='movieCard';
+card.innerHTML=`<img src="https://archive.org/services/img/${m.id}" alt="${m.title}">
+<h3>${m.title}</h3>
+<p>${m.desc}</p>
+<a class="btn" target="_blank" href="https://archive.org/details/${m.id}">Stream</a>
+<a class="btn" target="_blank" href="https://archive.org/download/${m.id}">Download</a>`;
+rowDiv.appendChild(card);
+});
+
+// Infinite scroll on horizontal
+rowDiv.addEventListener('scroll', async ()=>{
+if(rowDiv.scrollLeft + rowDiv.clientWidth >= rowDiv.scrollWidth - 50){
+await loadMoreCategory(cat,rowDiv);
+}
+});
+}
+
+// Load all categories
+function loadAllCategories(){
+mainContent.innerHTML='';
+categories.forEach(cat=>{
+if(preloadedMovies[cat]) renderCategoryRow(cat,preloadedMovies[cat]);
+});
+}
+
+// Scroll to category
+function scrollToCategory(cat){
+document.getElementById(cat).scrollIntoView({behavior:'smooth'});
+}
+
+// Load more movies dynamically from Archive.org
+async function loadMoreCategory(cat,rowDiv){
+categoryPages[cat]++;
+let query = cat.toLowerCase();
+if(cat==='Cartoons') query='cartoon';
+if(cat==='Anime') query='anime';
+try{
+const res = await fetch(`https://archive.org/advancedsearch.php?q=${query}+collection:movies&fl[]=identifier,title&rows=10&page=${categoryPages[cat]}&output=json`);
+const data = await res.json();
+const results = data.response.docs.map(d=>({title:d.title, desc:`${cat} Archive.org`, id:d.identifier}));
+results.forEach(m=>{
+const card=document.createElement('div');
+card.className='movieCard';
