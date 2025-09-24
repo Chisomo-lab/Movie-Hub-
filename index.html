@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <style>
+    /* Add your CSS styles here */
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Movie Hub Pro</h1>
+    <input type="text" id="searchInput" placeholder="Search movies on Archive.org">
+  </header>
+
+  <section id="categories">
+    <!-- Categories will be dynamically populated here -->
+  </section>
+
+  <script>
+    const moviesDB = {
+      action: [
+        { title: "The Big Heat (1988)", identifier: "the-big-heat-eng-subtitles-for-cantonese-dub", description: "A Hong Kong action/thriller movie." },
+        { title: "The Wrath Of Silence (1994)", identifier: "the.-wrath.of.-silence.-1994.-ldrip.x-264", description: "A Hong Kong Category III horror film." }
+      ],
+      comedy: [
+        { title: "Charlie Chaplin: The Tramp (1915)", identifier: "charlie-chaplin-.-the-tramp-1915-restored-silent-short-film-noir-comedy", description: "A restored silent short film noir comedy." },
+        { title: "Screwball 94 (1994)", identifier: "screwball.-94.1994.-dvdrip.x-264-zuul", description: "A Hong Kong Category III erotica/comedy." }
+      ],
+      horror: [
+        { title: "What Lies Beneath (2000)", identifier: "what-lies-beneath_202210", description: "A supernatural horror thriller starring Harrison Ford and Michelle Pfeiffer." },
+        { title: "The Eternal Evil Of Asia (1995)", identifier: "evil_20240319", description: "A horror/comedy about a curse cast upon four friends." }
+      ],
+      anime: [
+        { title: "Angel's Egg (1985)", identifier: "angels-egg-1985-blu-ray-1080p-jap-audio", description: "An experimental anime film by Mamoru Oshii." },
+        { title: "BEASTARS Season 1", identifier: "beastars-season-1-1080p", description: "An anime series exploring anthropomorphic characters." }
+      ],
+      animated: [
+        { title: "Fun and Fancy Free (1997)", identifier: "fun-and-fancy-free-1997-vhs", description: "A collection of animated VHS and DVD captures." },
+        { title: "Disney Cartoons Public Domain", identifier: "disneycartoons-publicdomain", description: "A collection of Disney cartoon shorts that have fallen into the public domain." }
+      ]
+    };
+
+    function renderCategory(category) {
+      const container = document.getElementById(category);
+      moviesDB[category].forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "movie-card";
+        const img = document.createElement("img");
+        img.src = `https://archive.org/services/img/${movie.identifier}`;
+        img.alt = movie.title;
+        const title = document.createElement("h4");
+        title.textContent = movie.title;
+        const desc = document.createElement("p");
+        desc.textContent = movie.description;
+        const btnBox = document.createElement("div");
+        btnBox.className = "btn-box";
+        const streamBtn = document.createElement("a");
+        streamBtn.href = `https://archive.org/details/${movie.identifier}`;
+        streamBtn.target = "_blank";
+        streamBtn.textContent = "Stream";
+        streamBtn.className = "stream";
+        const downloadBtn = document.createElement("a");
+        downloadBtn.href = `https://archive.org/download/${movie.identifier}`;
+        downloadBtn.target = "_blank";
+        downloadBtn.textContent = "Download";
+        downloadBtn.className = "download";
+        btnBox.appendChild(streamBtn);
+        btnBox.appendChild(downloadBtn);
+        card.appendChild(img);
+        card.appendChild(title);
+        card.appendChild(desc);
+        card.appendChild(btnBox);
+        container.appendChild(card);
+      });
+    }
+
+    function renderAllCategories() {
+      Object.keys(moviesDB).forEach(category => {
+        const section = document.createElement("section");
+        section.className = "category";
+        const header = document.createElement("h3");
+        header.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        section.appendChild(header);
+        const container = document.createElement("div");
+        container.className = "movie-row";
+        container.id = category;
+        section.appendChild(container);
+        const loadMoreBtn = document.createElement("button");
+        loadMoreBtn.className = "load-btn";
+        loadMoreBtn.textContent = "Load More";
+        loadMoreBtn.addEventListener("click", () => renderCategory(category));
+        section.appendChild(loadMoreBtn);
+        document.getElementById("categories").appendChild(section);
+        renderCategory(category);
+      });
+    }
+
+    function searchMovies(query) {
+      const results = [];
+      Object.values(moviesDB).forEach(category => {
+        category.forEach(movie => {
+          if (movie.title.toLowerCase().includes(query.toLowerCase())) {
+            results.push(movie);
+          }
+        });
+      });
+      const container = document.getElementById("search-results");
+      container.innerHTML = "";
+      results.forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "movie-card";
+        const img = document.createElement("img");
+        img.src = `https://archive.org/services/img/${movie.identifier}`;
+        img.alt = movie.title;
+        const title = document.createElement("h4");
+        title.textContent = movie.title;
+        const desc = document.createElement("p");
+        desc.textContent = movie.description;
+        const btnBox = document.createElement("div");
+        btnBox.className = "btn-box";
+        const streamBtn = document.createElement("a");
+        streamBtn.href = `https://archive.org/details/${movie.identifier}`;
+        streamBtn.target = "_blank";
+       0
