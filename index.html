@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Hub Pro</title>
+
+<!-- Adsense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+crossorigin="anonymous"></script>
+
+<style>
+body {font-family: Arial, sans-serif; background:#111; color:#fff; margin:0; padding:0;}
+nav {background:#000; display:flex; justify-content:space-between; align-items:center; padding:10px 20px; position:sticky; top:0; z-index:1000;}
+nav .logo {font-size:20px; font-weight:bold; color:#e50914;}
+nav .menu {display:flex; gap:20px;}
+nav .menu a {color:#fff; text-decoration:none; font-size:16px; transition: color 0.3s;}
+nav .menu a:hover {color:#e50914;}
+#searchBar {width:250px; padding:6px; border-radius:5px; border:none;}
+#categories {display:flex; justify-content:center; flex-wrap:wrap; background:#222; padding:10px; gap:10px; position:sticky; top:50px; z-index:999;}
+.cat-btn {background:#e50914; color:#fff; border:none; padding:8px 14px; border-radius:20px; cursor:pointer; font-size:14px;}
+.cat-btn:hover {background:#b20710;}
+.category-row {margin:20px 0;}
+.category-title {font-size:20px; margin-left:20px; margin-bottom:10px;}
+.movie-row {display:flex; overflow-x:auto; gap:15px; padding-left:20px; scroll-behavior:smooth;}
+.movieCard {background:#222; min-width:180px; flex-shrink:0; padding:10px; border-radius:10px; text-align:center; box-shadow:0 4px 8px rgba(0,0,0,0.6); transition:transform 0.2s;}
+.movieCard:hover {transform:scale(1.05);}
+.movieCard img {width:100%; height:250px; object-fit:cover; border-radius:5px;}
+.movieCard h3 {font-size:16px; margin:10px 0 5px 0; color:#fff;}
+.movieCard p {font-size:13px; color:#bbb; margin-bottom:10px; height:36px; overflow:hidden; text-overflow:ellipsis;}
+.btn {display:inline-block; padding:6px 12px; margin:4px; border:none; border-radius:5px; background:#e50914; color:#fff; cursor:pointer; text-decoration:none; font-size:13px;}
+.btn:hover {background:#b20710;}
+.ads-container {margin:20px auto; text-align:center;}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo">🎬 MovieHub Pro</div>
+<div class="menu">
+<a href="#" onclick="loadAllCategories()">Home</a>
+<a href="#categories">Categories</a>
+<a href="#" onclick="document.getElementById('searchBar').focus()">Search</a>
+</div>
+<input type="text" id="searchBar" placeholder="Search movies...">
+</nav>
+
+<div id="categories">
+<button class="cat-btn" onclick="scrollToCategory('Cartoons')">Cartoons</button>
+<button class="cat-btn" onclick="scrollToCategory('Anime')">Anime</button>
+<button class="cat-btn" onclick="scrollToCategory('Action')">Action</button>
+<button class="cat-btn" onclick="scrollToCategory('Comedy')">Comedy</button>
+<button class="cat-btn" onclick="scrollToCategory('Horror')">Horror</button>
+<button class="cat-btn" onclick="scrollToCategory('Drama')">Drama</button>
+<button class="cat-btn" onclick="scrollToCategory('Romance')">Romance</button>
+<button class="cat-btn" onclick="scrollToCategory('Sci-Fi')">Sci-Fi</button>
+<button class="cat-btn" onclick="scrollToCategory('Documentary')">Documentary</button>
+</div>
+
+<div class="ads-container">
+<ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-3798659133542290"
+data-ad-slot="634626837"
+data-ad-format="auto"
+data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<main id="mainContent"></main>
+
+<script>
+const mainContent = document.getElementById("mainContent");
+const searchBar = document.getElementById("searchBar");
+
+const categories = ['Cartoons','Anime','Action','Comedy','Horror','Drama','Romance','Sci-Fi','Documentary'];
+
+const preloadedMovies = {
+  'Cartoons': [
+    {id:'spiderman1944', title:'Spider-Man', desc:'Classic Spider-Man Cartoon'},
+    {id:'popeyeclassic', title:'Popeye', desc:'Classic Popeye Cartoon'},
+    {id:'tomjerry1940', title:'Tom & Jerry', desc:'Tom & Jerry Cartoon'},
+    {id:'bugs_bunny_1940', title:'Bugs Bunny', desc:'Classic Bugs Bunny'},
+    {id:'doraemon_001', title:'Doraemon', desc:'Doraemon Cartoon'},
+    {id:'finding_nemo', title:'Finding Nemo', desc:'Pixar Cartoon'},
+    {id:'scoobydoo_001', title:'Scooby-Doo', desc:'Scooby-Doo Cartoon'}
+  ],
+  'Anime': [
+    {id:'astroboy1963', title:'Astro Boy', desc:'Classic Anime'},
+    {id:'speedracer1967', title:'Speed Racer', desc:'Racing Anime'},
+    {id:'voltron1984', title:'Voltron', desc:'Robot Mecha'},
+    {id:'gatchaman1972', title:'Science Ninja Team Gatchaman', desc:'Anime Adventure'},
+    {id:'mazingerz1972', title:'Mazinger Z', desc:'Mecha Anime'},
+    {id:'robotech1985', title:'Robotech', desc:'Space Anime'},
+    {id:'gundam1979', title:'Mobile Suit Gundam', desc:'Epic Space Anime'}
+  ],
+  'Action': [
+    {id:'thegreenhornet1940', title:'The Green Hornet', desc:'Masked vigilante action'},
+    {id:'theshadow1940s', title:'The Shadow', desc:'Crime fighter'},
+    {id:'thephantom1940', title:'The Phantom', desc:'Jungle action hero'},
+    {id:'zorro1940', title:'Zorro', desc:'Masked swordsman'},
+    {id:'batman1940s', title:'Batman', desc:'Early Batman episodes'},
+    {id:'captainamerica1940s', title:'Captain America', desc:'Super soldier'},
+    {id:'loneranger1940', title:'The Lone Ranger', desc:'Masked hero'}
+  ],
+  'Comedy': [
+    {id:'threestooges', title:'The Three Stooges', desc:'Slapstick comedy trio'},
+    {id:'abbottandcostello', title:'Abbott and Costello', desc:'Classic comedy duo'},
+    {id:'laurelandhardy', title:'Laurel and Hardy', desc:'Silent era comedy'},
+    {id:'charliechaplin', title:'Charlie Chaplin', desc:'Silent film legend'},
+    {id:'busterkeaton', title:'Buster Keaton', desc:'Stone-faced comedian'},
+    {id:'marxbrothers', title:'Marx Brothers', desc:'Zany brothers comedy'},
+    {id:'wcfields', title:'W.C. Fields', desc:'Classic comedy'}
+  ],
+  'Horror': [
+    {id:'nosferatu1922', title:'Nosferatu', desc:'Silent vampire classic'},
+    {id:'dracula1931', title:'Dracula', desc:'Vampire horror'},
+    {id:'frankenstein1931', title:'Frankenstein', desc:'Monster horror'},
+    {id:'themummy1932', title:'The Mummy', desc:'Cursed ancient mummy'},
+    {id:'invisibleman1933', title:'The Invisible Man', desc:'Science horror'},
+    {id:'wolfman1941', title:'The Wolf Man', desc:'Werewolf classic'},
+    {id:'brideoffrankenstein1935', title:'Bride of Frankenstein', desc:'Sequel horror'}
+  ],
+  'Drama': [
+    {id:'gonewiththewind1939', title:'Gone with the Wind', desc:'Epic love story'},
+    {id:'casablanca1942', title:'Casablanca', desc:'WWII romantic drama'},
+    {id:'citizenkane1941', title:'Citizen Kane', desc:'Publishing tycoon story'},
+    {id:'grapesofwrath1940', title:'The Grapes of Wrath', desc:'Family hardships'},
+    {id:'astreetcarnameddesire1951', title:'A Streetcar Named Desire', desc:'Drama adaptation'},
+    {id:'12angrymen1957', title:'12 Angry Men', desc:'Jury deliberation drama'},
+    {id:'tokillamockingbird1962', title:'To Kill a Mockingbird', desc:'Racial injustice story'}
+  ],
+  'Romance': [
+    {id:'prideprejudice1940', title:'Pride and Prejudice', desc:'Jane Austen classic'},
+    {id:'romeojuliet1968', title:'Romeo and Juliet', desc:'Shakespeare tragedy'},
+    {id:'thenotebook2004', title:'The Notebook', desc:'Romantic drama'},
+    {id:'titanic1997', title:'Titanic', desc:'Epic love story'},
+    {id:'lalaland2016', title:'La La Land', desc:'Musical romance'},
+    {id:'faultinourstars2014', title:'The Fault in Our Stars', desc:'Young love story'},
+    {id:'awalktoremember2002', title:'A Walk to Remember', desc:'High school romance'}
+  ],
+  'Sci-Fi': [
+    {id:'metropolis1927', title:'Metropolis', desc:'Sci-Fi classic'},
+    {id:'2001spaceodyssey1968', title:'2001: A Space Odyssey', desc:'Space epic'},
+    {id:'bladerunner1982', title:'Blade Runner', desc:'Dystopian sci-fi'},
+    {id:'starwars1977', title:'Star Wars: A New Hope', desc:'Space adventure'},
+    {id:'matrix1999', title:'The Matrix', desc:'Reality-bending thriller'},
+    {id:'inception2010', title:'Inception', desc:'Dream heist thriller'},
+    {id:'interstellar2014', title:'Interstellar', desc:'Journey beyond galaxies'}
+  ],
+  'Documentary': [
+    {id:'wontyoubemyneighbor2018', title:"Won't You Be My Neighbor?", desc:'Fred Rogers story'},
+    {id:'13th2016', title:'13th', desc:'Racial inequality examination'},
+    {id:'jirodreamsofsushi2011', title:'Jiro Dreams of Sushi', desc:'Sushi perfection'},
+    {id:'freesolo2018', title:'Free Solo', desc:'Climbing without ropes'},
+    {id:'socialdilemma2020', title:'The Social Dilemma', desc:'Impact of social networking'},
+    {id:'makingamurderer2015', title:'Making a Murderer', desc:'Controversial case'},
+    {id:'wontyoubemyneighbor2018', title:"Won't You Be My Neighbor?", desc:'Fred Rogers story'}
+  ]
+};
+
+// Render category row
+function renderCategoryRow(cat, movies){
+const rowContainer = document.createElement('div');
+rowContainer.className='category-row';
+rowContainer.id=cat;
+rowContainer.innerHTML=`<div class="category-title">${cat}</div><div class="movie-row" id="row-${cat}"></div>`;
+mainContent.appendChild(rowContainer);
+
+const rowDiv = document.getElementById(`row-${cat}`);
+movies.forEach(m=>{
+const card=document.createElement('div');
+card.className='movieCard';
+card.innerHTML=`<img src="https://archive.org/services/img/${m.id}" alt="${m.title}">
+<h3>${m.title}</h3>
+<p>${m.desc}</p>
+<a class="btn" target="_blank" href="https://archive.org/details/${m.id}">Stream</a>
+<a class="btn" target="_blank" href="https://archive.org/download/${m.id}">Download</a>`;
+rowDiv.appendChild(card);
+});
+}
+
+// Load all categories
+function loadAllCategories(){
+mainContent.innerHTML='';
+categories.forEach(cat=>{
+if(preloadedMovies[cat]) renderCategoryRow(cat,preloadedMovies[cat]);
+});
+}
+
+// Scroll to category
+function scrollToCategory(cat){
+document.getElementById(cat).scrollIntoView({behavior:'smooth'});
+}
+
+// Search
+searchBar.addEventListener('keypress', async (e)=>{
+if(e.key==='Enter'){
+const query = searchBar.value.trim();
+if(!query) return;
+mainContent.innerHTML='';
+try{
+const res = await fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}+collection:movies&fl[]=identifier,title&rows=20&page=1&output=json`);
+const data = await res.json();
+const results = data.response.docs.map(d=>({id:d.identifier, title:d.title, desc:'Archive.org'}));
+renderCategoryRow('Search Results',results);
+}catch(err){mainContent.innerHTML='<p style="padding:20px;">Failed to fetch results.</p>';}
+}
+});
+
+// Load homepage
+loadAllCategories();
+</script>
+</body>
+</html>
