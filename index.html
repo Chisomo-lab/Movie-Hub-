@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    /* Navigation Bar */
+    nav {
+      background: #000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    nav .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #e50914;
+    }
+    nav .menu {
+      display: flex;
+      gap: 20px;
+    }
+    nav .menu a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    nav .menu a:hover {
+      color: #e50914;
+    }
+    #searchBar {
+      width: 250px;
+      padding: 6px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    /* Categories */
+    #categories {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: #222;
+      padding: 10px;
+      gap: 10px;
+      position: sticky;
+      top: 50px;
+      z-index: 999;
+    }
+    .cat-btn {
+      background: #e50914;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .cat-btn:hover {
+      background: #b20710;
+    }
+
+    /* Movie Grid */
+    #movieGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+    .movieCard {
+      background: #222;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .movieCard img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    .movieCard h3 {
+      font-size: 16px;
+      margin: 10px 0;
+    }
+    .btn {
+      display: inline-block;
+      padding: 8px 12px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background: #e50914;
+      color: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .btn:hover {
+      background: #b20710;
+    }
+    #loading {
+      text-align: center;
+      padding: 15px;
+      display: none;
+      font-size: 16px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="logo">🎬 MovieHub Pro</div>
+    <div class="menu">
+      <a href="#" onclick="newSearch('movies')">Home</a>
+      <a href="#categories">Categories</a>
+      <a href="#" onclick="document.getElementById('searchBar').focus()">Search</a>
+    </div>
+    <input type="text" id="searchBar" placeholder="Search movies...">
+  </nav>
+
+  <!-- Category Bar -->
+  <div id="categories">
+    <button class="cat-btn" onclick="newSearch('action')">Action</button>
+    <button class="cat-btn" onclick="newSearch('comedy')">Comedy</button>
+    <button class="cat-btn" onclick="newSearch('horror')">Horror</button>
+    <button class="cat-btn" onclick="newSearch('drama')">Drama</button>
+    <button class="cat-btn" onclick="newSearch('romance')">Romance</button>
+    <button class="cat-btn" onclick="newSearch('animation')">Animation</button>
+    <button class="cat-btn" onclick="newSearch('sci-fi')">Sci-Fi</button>
+    <button class="cat-btn" onclick="newSearch('documentary')">Documentary</button>
+  </div>
+
+  <!-- Movie Grid -->
+  <main>
+    <div id="movieGrid"></div>
+    <div id="loading">Loading more movies...</div>
+  </main>
+
+  <script>
+    const movieGrid = document.getElementById("movieGrid");
+    const searchBar = document.getElementById("searchBar");
+    const loading = document.getElementById("loading");
+
+    let currentQuery = "movies";
+    let currentPage = 1;
+    let isLoading = false;
+
+    // Fetch movies from archive.org
+    async function fetchMovies(query = "movies", page = 1, append = false) {
+      if (isLoading) return;
+      isLoading = true;
+      if (!append) movieGrid.innerHTML = "<p>Loading...</p>";
+      else loading.style.display = "block";
+
+      try {
+        const res = await fetch(`https://archive.org/advancedsearch.php?q=${query}+collection:movies&fl[]=identifier,title&rows=20&page=${page}&output=json`);
+        const data = await res.json();
+        displayMovies(data.response.docs, append);
+      } catch (error) {
+        movieGrid.innerHTML = "<p>Failed to load movies.</p>";
+      }
+      isLoading = false;
+      loading.style.display = "none";
+    }
+
+    function displayMovies(movies, append = false) {
+      if (!append) movieGrid.innerHTML = "";
+      if (movies.length === 0) {
+        if (!append) movieGrid.innerHTML = "<p>No movies found.</p>";
+        return;
+      }
+      movies.forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "movieCard";
+
+        const thumb = `https://archive.org/services/img/${movie.identifier}`;
+
+        card.innerHTML = `
+          <img src="${thumb}" alt="${movie.title}">
+          <h3>${movie.title}</h3>
+          <a class="btn" target="_blank" href="https://archive.org/details/${movie.identifier}">Stream</a>
+          <a class="btn" target="_blank" href="https://archive.org/download/${movie.identifier}">Download</a>
+        `;
+        movieGrid.appendChild(card);
+      });
+    }
+
+    // Reset search
+    function newSearch(query) {
+      currentQuery = query;
+      currentPage = 1;
+      fetchMovies(currentQuery, currentPage);
+    }
+
+    // Infinite scroll
+    window.addEventListener("scroll", () => {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200 && !isLoading) {
+        currentPage++;
+        fetchMovies(currentQuery, currentPage, true);
+      }
+    });
+
+    // Search on Enter
+    searchBar.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        currentQuery = searchBar.value.trim();
+        currentPage = 1;
+        fetchMovies(currentQuery, currentPage);
+      }
+    });
+
+    // Load default movies
+    fetchMovies();
+  </script>
+</body>
+</html>
