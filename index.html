@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #111; color: #fff; }
+    header { background: #e50914; padding: 20px; text-align: center; }
+    header h1 { margin: 0; font-size: 2.5em; }
+    header input[type="text"] { padding: 10px; width: 80%; margin-top: 10px; border: none; border-radius: 5px; }
+    .category { margin: 20px 0; }
+    .category h3 { background: #222; padding: 10px; margin: 0; font-size: 1.5em; }
+    .movie-row { display: flex; flex-wrap: wrap; justify-content: space-around; }
+    .movie-card { width: 18%; margin: 10px 0; background: #333; border-radius: 5px; overflow: hidden; }
+    .movie-card img { width: 100%; height: auto; }
+    .movie-card h4 { margin: 10px; font-size: 1.2em; }
+    .movie-card p { margin: 0 10px 10px; font-size: 0.9em; }
+    .btn-box { display: flex; justify-content: space-between; margin: 0 10px 10px; }
+    .btn-box a { background: #e50914; color: #fff; padding: 5px 10px; border-radius: 5px; text-decoration: none; }
+    .load-btn { background: #e50914; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    .load-btn:hover { background: #b81c1c; }
+    footer { background: #222; padding: 10px; text-align: center; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Movie Hub Pro</h1>
+  <input type="text" id="search-bar" placeholder="Search movies..." oninput="searchMovies()">
+</header>
+
+<div id="categories"></div>
+
+<footer>
+  <p>Powered by Archive.org | Monetized with AdSense</p>
+</footer>
+
+<script>
+const moviesDB = {
+  action: [
+    {title:"Night of the Living Dead", description:"Classic horror-action 1968 film.", img:"https://archive.org/download/night_of_the_living_dead/poster.jpg", stream:"https://archive.org/details/night_of_the_living_dead", download:"https://archive.org/download/night_of_the_living_dead/night_of_the_living_dead_1968.mp4"},
+    {title:"The Big Heat", description:"1988 action-thriller.", img:"https://archive.org/download/the-big-heat-eng-subtitles-for-cantonese-dub/poster.jpg", stream:"https://archive.org/details/the-big-heat-eng-subtitles-for-cantonese-dub", download:"https://archive.org/download/the-big-heat-eng-subtitles-for-cantonese-dub/the-big-heat.mp4"},
+    // Add 98+ more
+  ],
+  comedy: [
+    {title:"The Tramp", description:"Silent short comedy.", img:"https://archive.org/download/charlie-chaplin-.-the-tramp-1915-restored-silent-short-film-noir-comedy/poster.jpg", stream:"https://archive.org/details/charlie-chaplin-.-the-tramp-1915-restored-silent-short-film-noir-comedy", download:"https://archive.org/download/charlie-chaplin-.-the-tramp-1915-restored-silent-short-film-noir-comedy/The_Tramp.mp4"},
+    // Add 99+ more
+  ],
+  horror: [
+    {title:"What Lies Beneath", description:"Supernatural horror thriller.", img:"https://archive.org/download/what-lies-beneath_202210/poster.jpg", stream:"https://archive.org/details/what-lies-beneath_202210", download:"https://archive.org/download/what-lies-beneath_202210/What_Lies_Beneath.mp4"},
+    // Add 99+ more
+  ],
+  anime: [
+    {title:"Angel's Egg", description:"Experimental anime film by Mamoru Oshii.", img:"https://archive.org/download/angels-egg-1985-blu-ray-1080p-jap-audio/poster.jpg", stream:"https://archive.org/details/angels-egg-1985-blu-ray-1080p-jap-audio", download:"https://archive.org/download/angels-egg-1985-blu-ray-1080p-jap-audio/Angels_Egg.mp4"},
+    // Add 99+ more
+  ],
+  animated: [
+    {title:"Fun and Fancy Free", description:"Animated VHS/DVD captures.", img:"https://archive.org/download/fun-and-fancy-free-1997-vhs/poster.jpg", stream:"https://archive.org/details/fun-and-fancy-free-1997-vhs", download:"https://archive.org/download/fun-and-fancy-free-1997-vhs/Fun_and_Fancy_Free.mp4"},
+    // Add 99+ more
+  ]
+};
+
+const state = {action:0, comedy:0, horror:0, anime:0, animated:0};
+const moviesPerPage = 5;
+
+function renderCategory(category){
+  const container = document.getElementById(category);
+  const start = state[category];
+  const end = start + moviesPerPage;
+  moviesDB[category].slice(start,end).forEach(movie=>{
+    const card = document.createElement("div"); card.className="movie-card";
+    card.innerHTML = `<img src="${movie.img}" alt="${movie.title}"><h4>${movie.title}</h4><p>${movie.description}</p>
+    <div class="btn-box">
+      <a class="stream" href="${movie.stream}" target="_blank">Stream</a>
+      <a class="download" href="${movie.download}" target="_blank">Download</a>
+    </div>`;
+    container.appendChild(card);
+  });
+  state[category]+=moviesPerPage;
+  const loadBtn = document.getElementById(`${category}-load`);
+  if(state[category]>=moviesDB[category].length && loadBtn) loadBtn.style.display="none";
+}
+
+function createCategorySection(category){
+  const section = document.createElement("section"); section.className="category";
+  const header = document.createElement("h3"); header.textContent=category.charAt(0).toUpperCase()+category.slice(1);
+  section.appendChild(header);
+  const container = document.createElement("div"); container.className="movie-row"; container.id=category;
+  section.appendChild(container);
+  const loadMore = document.createElement("button"); loadMore.id=`${category}-load`; loadMore.className="load-btn"; loadMore.textContent="Load More";
+  loadMore.addEventListener("click", ()=>renderCategory(category));
+  section.appendChild(loadMore);
+  document.getElementById("categories").appendChild(section);
+}
+
+function searchMovies(){
+  const query = document.getElementById("search-bar").value.toLowerCase();
+  Object.keys(moviesDB).forEach(cat=>{
+    const filteredMovies = moviesDB[cat].filter(movie => movie.title.toLowerCase().includes(query));
+    const container = document.getElementById(cat);
+    container.innerHTML = '';
+    filteredMovies.forEach(movie => {
+      const card = document.createElement("div"); card.className="movie-card";
+      card.innerHTML = `<img src="${movie.img}" alt="${movie.title}"><h4>${movie.title}</h4><p>${movie.description}</p>
+      <div class="btn-box">
+        <a class="stream" href="${movie.stream}" target="_blank">Stream</a>
+        <a class="download" href="${movie.download}" target="_blank">Download</a>
+      </div>`;
+      container.appendChild(card);
+    });
+  });
+}
+
+Object.keys(moviesDB).forEach(cat=>{
+  createCategorySection(cat);
+  renderCategory(cat);
+});
+</script>
+
+</body>
+</html>
