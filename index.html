@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Hub Pro</title>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+  body { margin:0; background:#111; color:#fff; font-family: Arial, sans-serif; }
+  header { display:flex; flex-direction:column; align-items:center; padding:15px 0; background:#000; position:sticky; top:0; z-index:1000; }
+  header h1 { color:#e50914; font-size:36px; margin:0 0 10px; }
+
+  nav { display:flex; gap:15px; flex-wrap:wrap; transition: all 0.3s ease; justify-content:center; }
+  nav a { color:#fff; text-decoration:none; font-weight:bold; position:relative; padding:5px 10px; display:flex; align-items:center; gap:5px; transition: all 0.3s ease; }
+  nav a i { font-size:14px; }
+  nav a::after { content:""; position:absolute; width:0; height:2px; left:0; bottom:0; background:#e50914; transition:0.3s; }
+  nav a:hover::after { width:100%; }
+
+  .search-bar { margin:15px 0; width:80%; max-width:600px; }
+  .search-bar input { width:100%; padding:12px 15px; border-radius:25px; border:none; font-size:16px; outline:none; transition:0.3s; }
+  .search-bar input:focus { box-shadow:0 0 8px #e50914; }
+
+  .category { padding:20px; }
+  .category h3 { margin:10px 0; font-size:24px; }
+  .movie-row { display:flex; overflow-x:auto; gap:15px; padding-bottom:15px; }
+  .movie-row::-webkit-scrollbar { height:8px; background:#222; }
+  .movie-row::-webkit-scrollbar-thumb { background:#e50914; border-radius:4px; }
+  .movie-card { width:200px; flex:0 0 auto; background:#1a1a1a; padding:10px; border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.5); transition: transform 0.3s; }
+  .movie-card:hover { transform: scale(1.08); }
+  .movie-card img { width:100%; border-radius:6px; }
+  .movie-card h4 { font-size:14px; margin:8px 0 4px; }
+  .movie-card p { font-size:12px; color:#bbb; margin:0 0 8px; }
+  .btn-box { display:flex; justify-content:space-between; margin-top:5px; }
+  .btn-box a { padding:4px 8px; border-radius:4px; font-size:12px; text-decoration:none; color:#fff; }
+  .btn-box a.stream { background:#e50914; }
+  .btn-box a.download { background:#444; }
+</style>
+
+<!-- Adsense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header>
+  <h1>Movie Hub Pro</h1>
+
+  <nav>
+    <a href="#"><i class="fas fa-home"></i> Home</a>
+    <a href="#categories"><i class="fas fa-th-large"></i> Categories</a>
+    <a href="#search-results"><i class="fas fa-search"></i> Search</a>
+    <a href="#action"><i class="fas fa-bolt"></i> Action</a>
+    <a href="#comedy"><i class="fas fa-laugh"></i> Comedy</a>
+    <a href="#horror"><i class="fas fa-ghost"></i> Horror</a>
+    <a href="#anime"><i class="fas fa-dragon"></i> Anime</a>
+    <a href="#animated"><i class="fas fa-film"></i> Animated</a>
+  </nav>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search movies, anime, or shows...">
+  </div>
+</header>
+
+<!-- Adsense Ad -->
+<div style="text-align:center; margin:15px 0;">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-3798659133542290"
+       data-ad-slot="6354626837"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<!-- Categories -->
+<section id="categories">
+  <div class="category">
+    <h3>Action</h3>
+    <div class="movie-row" id="action"></div>
+  </div>
+  <div class="category">
+    <h3>Horror</h3>
+    <div class="movie-row" id="horror"></div>
+  </div>
+  <div class="category">
+    <h3>Comedy</h3>
+    <div class="movie-row" id="comedy"></div>
+  </div>
+  <div class="category">
+    <h3>Anime</h3>
+    <div class="movie-row" id="anime"></div>
+  </div>
+  <div class="category">
+    <h3>Animated</h3>
+    <div class="movie-row" id="animated"></div>
+  </div>
+</section>
+
+<!-- Search Results -->
+<section id="search-results" class="category">
+  <h3>Search Results</h3>
+  <div class="movie-row" id="searchContainer"></div>
+</section>
+
+<script>
+// Manual movie database
+const moviesDB = [
+  {id:"night_of_the_living_dead", title:"Night of the Living Dead", category:"horror", desc:"Classic zombie horror.", thumb:"https://archive.org/services/img/night_of_the_living_dead"},
+  {id:"the_general", title:"The General", category:"comedy", desc:"Buster Keaton silent comedy.", thumb:"https://archive.org/services/img/The_General"},
+  {id:"sherlock_holmes", title:"Sherlock Holmes", category:"action", desc:"Mystery and action.", thumb:"https://archive.org/services/img/sherlock_holmes"},
+  {id:"dragon_ball_ep1", title:"Dragon Ball Ep 1", category:"anime", desc:"Classic anime episode.", thumb:"https://archive.org/services/img/dragon_ball_ep1"},
+  {id:"beauty_and_the_beast", title:"Beauty and the Beast", category:"animated", desc:"Disney animated classic.", thumb:"https://archive.org/services/img/beauty_and_the_beast"},
+  {id:"king_kong_1933", title:"King Kong", category:"action", desc:"Giant ape movie.", thumb:"https://archive.org/services/img/king_kong_1933"},
+  {id:"frankenstein_1931", title:"Frankenstein", category:"horror", desc:"Classic horror.", thumb:"https://archive.org/services/img/frankenstein_1931"},
+  {id:"modern_times", title:"Modern Times", category:"comedy", desc:"Charlie Chaplin classic.", thumb:"https://archive.org/services/img/modern_times"},
+  {id:"anime_example", title:"Anime Example", category:"anime", desc:"Sample anime movie.", thumb:"https://archive.org/services/img/anime_example"},
+  {id:"animated_example", title:"Animated Example", category:"animated", desc:"Sample animated movie.", thumb:"https://archive.org/services/img/animated_example"}
+];
+
+// Render function
+function renderMovies(containerId, movies) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  movies.forEach(movie=>{
+    const card = document.createElement("div");
+    card.className = "movie-card";
+
+    const img = document.createElement("img");
+    img.src = movie.thumb;
+    img.alt = movie.title;
+
+    const title = document.createElement("h4");
+    title.textContent = movie.title;
+
+    const desc = document.createElement("p");
+    desc.textContent = movie.desc;
+
+    const btnBox = document.createElement("div");
+    btnBox.className = "btn-box";
+
+    const streamBtn = document.createElement("a");
+    streamBtn.href = `https://archive.org/details/${movie.id}`;
+    streamBtn.target="_blank";
+    streamBtn.textContent="Stream";
+    streamBtn.className="stream";
+
+    const downloadBtn = document.createElement("a");
+    downloadBtn.href = `https://archive.org/download/${movie.id}`;
+    downloadBtn.target="_blank";
+    downloadBtn.textContent="Download";
+    downloadBtn.className="download";
+
+    btnBox.appendChild(streamBtn);
+    btnBox.appendChild(downloadBtn);
+
+    card.appendChild(img);
+    card.appendChild(title);
+    card.appendChild(desc);
+    card.appendChild(btnBox);
+
+    container.appendChild(card);
+  });
+}
+
+// Initial render
+["action","comedy","horror","anime","animated"].forEach(cat=>{
+  renderMovies(cat, moviesDB.filter(m=>m.category===cat));
+});
+
+// Search function fetching from Archive.org
+async function searchMovies(query){
+  if(!query) return;
+  const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}+collection:feature_films+year:[1990+TO+2100]&fl[]=identifier,title,description&rows=15&page=1&output=json`;
+  try{
+    const res = await fetch(url);
+    const data = await res.json();
+    const movies = data.response.docs;
+    const container = document.getElementById("searchContainer");
+    container.innerHTML="";
+    movies.forEach(movie=>{
+      const card = document.createElement("div");
+      card.className = "movie-card";
+
+      const img = document.createElement("img");
+      img.src = `https://archive.org/services/img/${movie.identifier}`;
+      img.alt = movie.title;
+
+      const title = document.createElement("h4");
+      title.textContent = movie.title;
+
+      const desc = document.createElement("p");
+      desc.textContent = movie.description ? movie.description.substring(0,60)+"..." : "No description available.";
+
+      const btnBox = document.createElement("div");
+      btnBox.className = "btn-box";
+
+      const streamBtn = document.createElement("a");
+      streamBtn.href = `https://archive.org/details/${movie.identifier}`;
+      streamBtn.target="_blank";
+      streamBtn.textContent="Stream";
+      streamBtn.className="stream";
+
+      const downloadBtn = document.createElement("a");
+      downloadBtn.href = `https://archive.org/download/${movie.identifier}`;
+      downloadBtn.target="_blank";
+      downloadBtn.textContent="Download";
+      downloadBtn.className="download";
+
+      btnBox.appendChild(streamBtn);
+      btnBox.appendChild(downloadBtn);
+
+      card.appendChild(img);
+      card.appendChild(title);
+      card.appendChild(desc);
+      card.appendChild(btnBox);
+
+      container.appendChild(card);
+    });
+  }catch(err){ console.error("Search error:", err); }
+}
+
+// Search input listener
+document.getElementById("searchInput").addEventListener("keyup", e=>{
+  const query = e.target.value.trim();
+  if(query.length>2) searchMovies(query);
+  else document.getElementById("searchContainer").innerHTML="";
+});
+</script>
+</body>
+</html>
