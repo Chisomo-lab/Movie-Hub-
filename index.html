@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieHub Pro – Cartoons</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; margin: 0; padding: 0; }
+    nav { background: #000; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: sticky; top: 0; z-index: 1000; }
+    nav .logo { font-size: 20px; font-weight: bold; color: #e50914; }
+    nav input#searchBar { width: 250px; padding: 6px; border-radius: 5px; border: none; }
+    .movieGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; }
+    .movieCard { background: #222; border-radius: 10px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); }
+    .movieCard img { width: 100%; height: 250px; object-fit: cover; border-radius: 6px; }
+    .movieCard h3 { margin: 10px 0 5px; font-size: 16px; }
+    .movieCard p { font-size: 13px; color: #bbb; height: 40px; overflow: hidden; text-overflow: ellipsis; }
+    .btn { display: inline-block; margin-top: 8px; padding: 6px 12px; background: #e50914; color: #fff; border-radius: 5px; text-decoration: none; font-size: 14px; }
+    .btn:hover { background: #b20710; }
+    #loading { text-align: center; padding: 15px; display: none; font-size: 16px; color: #aaa; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🎬 MovieHub Pro – Cartoons</div>
+  <input type="text" id="searchBar" placeholder="Search movies...">
+</nav>
+
+<main>
+  <div id="movieGrid" class="movieGrid"></div>
+  <div id="loading">Loading more movies...</div>
+</main>
+
+<script>
+  const movieGrid = document.getElementById("movieGrid");
+  const searchBar = document.getElementById("searchBar");
+
+  const cartoons = [
+    {
+      title: "Popeye Compilation (1933–1939)",
+      img: "https://archive.org/services/img/popeye-1933-1939",
+      description: "A collection of early Popeye the Sailor cartoons.",
+      stream: "https://archive.org/details/popeye-1933-1939",
+      download: "https://archive.org/download/popeye-1933-1939"
+    },
+    {
+      title: "Betty Boop Cartoons",
+      img: "https://archive.org/services/img/BettyBoopCartoons",
+      description: "Classic Betty Boop shorts collected in one video.",
+      stream: "https://archive.org/details/BettyBoopCartoons",
+      download: "https://archive.org/download/BettyBoopCartoons"
+    },
+    {
+      title: "Betty Boop for President (1932)",
+      img: "https://archive.org/services/img/Betty_Boop_for_President_1932",
+      description: "Betty Boop runs for President in a musical cartoon of the era.",
+      stream: "https://archive.org/details/Betty_Boop_for_President_1932",
+      download: "https://archive.org/download/Betty_Boop_for_President_1932"
+    },
+    {
+      title: "Popeye Meets Sindbad (1936)",
+      img: "https://archive.org/services/img/popeye-the-sailor-meets-sindbad-the-sailor-1936",
+      description: "Popeye faces off against Sindbad in this public domain adventure.",
+      stream: "https://archive.org/details/popeye-the-sailor-meets-sindbad-the-sailor-1936",
+      download: "https://archive.org/download/popeye-the-sailor-meets-sindbad-the-sailor-1936"
+    },
+    {
+      title: "Popeye Meets Ali Baba (1937)",
+      img: "https://archive.org/services/img/PopeyeAliBaba",
+      description: "Popeye goes on an adventure in an Arabian themed short.",
+      stream: "https://archive.org/details/PopeyeAliBaba",
+      download: "https://archive.org/download/PopeyeAliBaba"
+    },
+    {
+      title: "Superman (1941) – The Mechanical Monsters",
+      img: "https://archive.org/services/img/Superman_1941_TheMechanicalMonsters",
+      description: "Superman battles evil robots in a classic animated short.",
+      stream: "https://archive.org/details/Superman_1941_TheMechanicalMonsters",
+      download: "https://archive.org/download/Superman_1941_TheMechanicalMonsters"
+    },
+    {
+      title: "Superman (1941) – The Arctic Giant",
+      img: "https://archive.org/services/img/Superman_1941_TheArcticGiant",
+      description: "Superman fights a giant robot in the Arctic.",
+      stream: "https://archive.org/details/Superman_1941_TheArcticGiant",
+      download: "https://archive.org/download/Superman_1941_TheArcticGiant"
+    },
+    {
+      title: "Spider-Man (1967) Episode 1",
+      img: "https://archive.org/services/img/SpiderMan_1967_Ep1",
+      description: "The first animated episode of classic Spider-Man.",
+      stream: "https://archive.org/details/SpiderMan_1967_Ep1",
+      download: "https://archive.org/download/SpiderMan_1967_Ep1"
+    },
+    {
+      title: "Superman (1941) – Daredevil the Daredevil",
+      img: "https://archive.org/services/img/Superman_1941_DaredevilTheDaredevil",
+      description: "Superman stops criminals in Metropolis.",
+      stream: "https://archive.org/details/Superman_1941_DaredevilTheDaredevil",
+      download: "https://archive.org/download/Superman_1941_DaredevilTheDaredevil"
+    }
+  ];
+
+  function displayMovies(list) {
+    movieGrid.innerHTML = "";
+    list.forEach(movie => {
+      const card = document.createElement("div");
+      card.className = "movieCard";
+      card.innerHTML = `
+        <img src="${movie.img}" alt="${movie.title}">
+        <h3>${movie.title}</h3>
+        <p>${movie.description}</p>
+        <a class="btn" target="_blank" href="${movie.stream}">Stream</a>
+        <a class="btn" target="_blank" href="${movie.download}">Download</a>
+      `;
+      movieGrid.appendChild(card);
+    });
+  }
+
+  displayMovies(cartoons);
+
+  searchBar.addEventListener("keypress", async e => {
+    if (e.key === "Enter") {
+      const query = searchBar.value.trim();
+      if (!query) return;
+      movieGrid.innerHTML = "<p style='padding:20px;'>Searching...</p>";
+      try {
+        const res = await fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}+collection:movies&fl[]=identifier,title,description&rows=20&page=1&output=json`);
+        const data = await res.json();
+        const results = data.response.docs.map(doc => ({
+          title: doc.title,
+          description: doc.description ? doc.description : "No description available.",
+          img: `https://archive.org/services/img/${doc.identifier}`,
+          stream: `https://archive.org/details/${doc.identifier}`,
+          download: `https://archive.org/download/${doc.identifier}`
+        }));
+        displayMovies(results.length ? results : [{ title: "No movies found", img: "", description: "Try another search.", stream: "#", download: "#" }]);
+      } catch (err) {
+        movieGrid.innerHTML = "<p style='padding:20px;'>Search failed. Try again.</p>";
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
