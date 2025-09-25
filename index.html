@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+
+  <!-- Adsense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+     crossorigin="anonymous"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #000;
+      padding: 15px;
+      text-align: center;
+      color: #f00;
+    }
+    .search-container {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      gap: 5px;
+    }
+    .search-container input {
+      width: 60%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    h2 {
+      margin: 20px 10px 10px;
+      color: #f00;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      padding: 10px;
+    }
+    .movie {
+      background: #222;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .movie img {
+      width: 100%;
+      border-radius: 8px;
+      height: 250px;
+      object-fit: cover;
+      cursor: pointer;
+    }
+    .movie button {
+      margin-top: 8px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      background: #f00;
+      color: #fff;
+      cursor: pointer;
+    }
+    .favorite-btn {
+      background: transparent;
+      font-size: 18px;
+      margin-left: 5px;
+    }
+    .favorited {
+      color: #f00;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 20px;
+      background: #000;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎬 Movie Hub Pro</h1>
+    <p>Your free movie directory powered by Archive.org</p>
+  </header>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search exact title...">
+  </div>
+
+  <h2>Trending</h2>
+  <div class="grid" id="trendingMovies"></div>
+
+  <h2>All Movies</h2>
+  <div class="grid" id="allMovies"></div>
+
+  <footer>
+    <p>© 2025 Gabriel Sakala</p>
+    <p>© 2025 Kingsley Mudenda</p>
+    <p>© 2025 David Mwale</p>
+    <p>In partnership with <a href="https://archive.org" target="_blank" style="color:#f00;">Archive.org</a></p>
+  </footer>
+
+  <script>
+    const allMoviesDiv = document.getElementById("allMovies");
+    const trendingMoviesDiv = document.getElementById("trendingMovies");
+    const searchInput = document.getElementById("searchInput");
+
+    let movies = [];
+    let currentPage = 1;
+    let currentCategory = '';
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    const collectionLinks = {
+      sports: 'sports',
+      moviesandfilms: 'moviesandfilms',
+      television: 'television',
+      animationandcartoons: 'animationandcartoons'
+    };
+
+    async function fetchMovies(category = '', page = 1, query = '') {
+      try {
+        currentCategory = category;
+        const collection = collectionLinks[category] || '';
+        const searchQuery = collection ? `collection:(${collection})` : 'mediatype:movies';
+        const url = `https://archive.org/advancedsearch.php?q=${searchQuery}&fl[]=title&fl[]=identifier&fl[]=mediatype&fl[]=year&sort[]=downloads desc&rows=20&page=${page}&output=json`;
+        const response = await fetch(url);
+        const data = await response.json();
+        let newMovies = data.response.docs.map(item => ({
+          title: item.title,
+          link: `https://archive.org/details/${item.identifier}`,
+          thumbnail: `https://archive.org/services/img/${item.identifier}`,
+          year: item.year || 0
+        }));
+        if(query) newMovies = newMovies.filter(m => m.title.toLowerCase() === query.toLowerCase());
+        if(category === 'sports') newMovies.sort((a,b)=>b.year - a.year);
+        movies = page === 1 ? newMovies : [...movies, ...newMovies];
+        displayMovies(movies, allMoviesDiv);
+        displayMovies(movies.slice(0,5), trendingMoviesDiv);
+      } catch (err) { console.error("Failed to fetch movies:", err); }
+    }
+
+    function displayMovies(list, container) {
+      container.innerHTML = "";
+      list.forEach(movie => {
+        const div = document.createElement("div");
+        div.classList.add("movie");
+        const isFav = favorites.includes(movie.link) ? 'favorited' : '';
+        div.innerHTML = `
+          <img src="${movie.thumbnail}" alt="${movie.title}" onclick="window.open('${movie.link}', '_blank')">
+          <p>${movie.title}</p>
+          <button onclick="window.open('${movie.link}', '_blank')">Stream</button>
+          <button class="favorite-btn ${isFav}" onclick="toggleFavorite('${movie.link}', this)">❤</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleFavorite(link, btn) {
+      if(favorites.includes(link)){
+        favorites = favorites.filter(f => f !== link);
+        btn.classList.remove('favorited');
+      } else {
+        favorites.push(link);
+        btn.classList.add('favorited');
+      }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    function filterCategory(cat) { currentPage = 1; fetchMovies(cat, currentPage); }
+
+    searchInput.addEventListener("input", () => { 
+      currentPage = 1; 
+      fetchMovies('', currentPage, searchInput.value); 
+    });
+
+    window.addEventListener('scroll', () => {
+      if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500){
+        currentPage++;
+        fetchMovies(currentCategory, currentPage, searchInput.value);
+      }
+    });
+
+    fetchMovies('moviesandfilms');
+  </script>
+</body>
+</html>
