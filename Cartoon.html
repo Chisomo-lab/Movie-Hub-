@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartoons - Movie Hub Pro</title>
+<style>
+body { font-family: Arial,sans-serif; background:#111; color:#fff; margin:0; padding:0; }
+header { background:#b30000; text-align:center; padding:15px; font-size:24px; font-weight:bold; }
+nav { background:#222; display:flex; justify-content:center; padding:10px; }
+nav a { color:#fff; margin:0 15px; text-decoration:none; font-weight:bold; }
+nav a:hover { color:#e50914; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:15px; padding:20px; }
+.card { background:#222; border-radius:10px; overflow:hidden; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.5); transition:transform 0.2s; cursor:pointer; }
+.card:hover { transform:scale(1.05); }
+.card img { width:100%; height:180px; object-fit:cover; }
+.card h3 { padding:10px; font-size:16px; }
+.btn { display:inline-block; padding:6px 10px; margin:5px; border:none; border-radius:5px; background:#b30000; color:#fff; cursor:pointer; text-decoration:none; font-size:14px; }
+.btn:hover { background:#e50914; }
+#loading { text-align:center; padding:10px; color:#aaa; }
+</style>
+</head>
+<body>
+<header>Cartoons</header>
+
+<div style="text-align:center; margin:10px;">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+ crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-3798659133542290"
+     data-ad-slot="634626837"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="cartoons.html">Cartoons</a>
+<a href="anime.html">Anime</a>
+<a href="sports.html">Sports</a>
+<a href="movies.html">Movies</a>
+<a href="documentaries.html">Documentaries</a>
+<a href="television.html">Television</a>
+</nav>
+
+<div class="grid" id="cartoonGrid"></div>
+<div id="loading">Loading more cartoons...</div>
+
+<script>
+const cartoonGrid = document.getElementById('cartoonGrid');
+const loading = document.getElementById('loading');
+
+let cartoons = [
+  {id:"PopeyeTheSailor-1933", title:"Popeye The Sailor", description:"Classic Popeye cartoons."},
+  {id:"TomAndJerry-1940", title:"Tom & Jerry", description:"Classic Tom & Jerry shorts."},
+  {id:"ScoobyDoo-1969", title:"Scooby-Doo", description:"Mystery-solving dog adventures."},
+  {id:"SpiderMan-1967", title:"Spider-Man", description:"Animated adventures of Spider-Man."},
+  {id:"Superman-1941", title:"Superman", description:"Classic Superman animated shorts."},
+  {id:"LooneyTunes-1930s", title:"Looney Tunes", description:"Classic Looney Tunes shorts."},
+  {id:"MickeyMouse-1928", title:"Mickey Mouse", description:"Classic Mickey Mouse cartoons."},
+  {id:"DonaldDuck-1934", title:"Donald Duck", description:"Donald Duck classic cartoons."},
+  {id:"BettyBoop-1930", title:"Betty Boop", description:"Classic Betty Boop animations."},
+  {id:"FleischerStudios-1930s", title:"Fleischer Studios", description:"Various animations from Fleischer Studios."}
+];
+
+let itemsPerLoad = 5;
+let currentIndex = 0;
+
+function loadCartoons() {
+  const nextItems = cartoons.slice(currentIndex, currentIndex + itemsPerLoad);
+  nextItems.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="https://archive.org/services/img/${c.id}" alt="${c.title}">
+      <h3>${c.title}</h3>
+      <p>${c.description}</p>
+      <a class="btn" target="_blank" href="https://archive.org/details/${c.id}">Stream</a>
+      <a class="btn" target="_blank" href="https://archive.org/download/${c.id}">Download</a>
+    `;
+    cartoonGrid.appendChild(card);
+  });
+  currentIndex += itemsPerLoad;
+  if(currentIndex >= cartoons.length) loading.style.display = 'none';
+}
+
+window.addEventListener('scroll', () => {
+  if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+    loadCartoons();
+  }
+});
+
+// Initial load
+loadCartoons();
+</script>
+</body>
+</html>
