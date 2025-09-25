@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentaries - Movie Hub Pro</title>
+<style>
+  body { font-family: Arial,sans-serif; background:#111; color:#fff; margin:0; padding:0; }
+  header { background:#e50914; padding:20px; text-align:center; font-size:22px; font-weight:bold; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; padding:20px; }
+  .card { background:#222; border-radius:10px; overflow:hidden; text-align:center; transition:transform 0.3s; }
+  .card:hover { transform:scale(1.05); }
+  .card img { width:100%; height:200px; object-fit:cover; }
+  .card a { display:block; padding:10px; background:#e50914; text-decoration:none; color:white; font-weight:bold; }
+  footer { text-align:center; padding:10px; background:#000; margin-top:20px; font-size:14px; }
+</style>
+</head>
+<body>
+
+<header>🎥 Documentaries</header>
+
+<div style="text-align:center; margin:10px;">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+ crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-3798659133542290"
+     data-ad-slot="634626837"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<div class="grid" id="documentaries"></div>
+
+<footer>
+  <a href="index.html" style="color:#e50914; text-decoration:none;">⬅ Back to Home</a>
+</footer>
+
+<script>
+const docs = [
+  { title: "Planet Earth", id: "planet-earth-2006" },
+  { title: "The Blue Planet", id: "blue-planet-2001" },
+  { title: "Cosmos", id: "cosmos-1980" },
+  { title: "Inside Job", id: "inside-job-2010" },
+  { title: "Blackfish", id: "blackfish-2013" },
+  { title: "Food Inc.", id: "food-inc-2008" },
+  { title: "The Fog of War", id: "fog-of-war-2003" }
+];
+
+let html = "";
+docs.forEach(item => {
+  const img = `https://archive.org/services/img/${item.id}`;
+  const link = `https://archive.org/details/${item.id}`;
+  html += `
+    <div class="card">
+      <img src="${img}" alt="${item.title}">
+      <a href="${link}" target="_blank">▶ ${item.title}</a>
+    </div>
+  `;
+});
+
+document.getElementById("documentaries").innerHTML = html;
+</script>
+
+</body>
+</html>
