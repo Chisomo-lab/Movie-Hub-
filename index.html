@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Hub Pro</title>
+<link rel="stylesheet" href="style.css">
+<!-- AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290" crossorigin="anonymous"></script>
+</head>
+<body>
+<header>
+  <h1>Movie Hub Pro</h1>
+  <input type="text" id="searchInput" placeholder="Search movies...">
+</header>
+
+<nav id="categoryBar">
+  <button onclick="filterCategory('sports')">Sports</button>
+  <button onclick="filterCategory('moviesandfilms')">Movies & Films</button>
+  <button onclick="filterCategory('television')">Television</button>
+  <button onclick="filterCategory('animationandcartoons')">Animation & Cartoons</button>
+</nav>
+
+<section id="featured">
+  <h2>Trending Movies</h2>
+  <div class="movie-carousel" id="trendingMovies"></div>
+</section>
+
+<section id="ad1">
+  <ins class="adsbygoogle"
+       style="display:block; text-align:center;"
+       data-ad-format="auto"
+       data-full-width-responsive="true"
+       data-ad-client="ca-pub-3798659133542290"
+       data-ad-slot="6354626837"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</section>
+
+<section id="movieGrid">
+  <h2>All Movies</h2>
+  <div class="grid" id="allMovies"></div>
+</section>
+
+<footer>
+  <div class="footer-nav">
+    <span>Home</span>
+    <span>Categories</span>
+    <span>Favorites</span>
+    <span>Settings</span>
+  </div>
+
+  <ins class="adsbygoogle"
+       style="display:block; text-align:center;"
+       data-ad-format="auto"
+       data-full-width-responsive="true"
+       data-ad-client="ca-pub-3798659133542290"
+       data-ad-slot="6354626837"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
