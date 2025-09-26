@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- AdSense in HEAD -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>🎬 Movie Hub Pro</h1>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search movies, anime, football...">
+      <button onclick="searchMovies()">🔍 Search</button>
+    </div>
+  </header>
+
+  <!-- Header Ad -->
+  <div class="ad-container">
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-3798659133542290"
+        data-ad-slot="6354626837"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- Categories -->
+  <nav class="categories">
+    <button onclick="loadCategory('movies')">Movies</button>
+    <button onclick="loadCategory('cartoons')">Cartoons</button>
+    <button onclick="loadCategory('sports')">Football</button>
+    <button onclick="loadCategory('anime')">Anime</button>
+    <button onclick="loadCategory('television')">Television</button>
+  </nav>
+
+  <!-- Home Trending -->
+  <section id="homeTrending">
+    <h2>🔥 Trending Movies <button onclick="loadCategory('movies')">See All</button></h2>
+    <div id="trendingMovies" class="scroll-container"></div>
+
+    <h2>🎥 Trending Cartoons <button onclick="loadCategory('cartoons')">See All</button></h2>
+    <div id="trendingCartoons" class="scroll-container"></div>
+
+    <h2>⚽ Trending Football <button onclick="loadCategory('sports')">See All</button></h2>
+    <div id="trendingSports" class="scroll-container"></div>
+
+    <h2>🌀 Trending Anime <button onclick="loadCategory('anime')">See All</button></h2>
+    <div id="trendingAnime" class="scroll-container"></div>
+
+    <h2>📺 Trending Television <button onclick="loadCategory('television')">See All</button></h2>
+    <div id="trendingTV" class="scroll-container"></div>
+  </section>
+
+  <!-- Mid Page Ad -->
+  <div class="ad-container">
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-3798659133542290"
+        data-ad-slot="6354626837"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- Category Grid -->
+  <main>
+    <h2 id="categoryTitle">All Movies</h2>
+    <div class="grid" id="movieGrid"></div>
+    <p id="loading" style="text-align:center;display:none;">⏳ Loading more...</p>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="ad-container">
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-client="ca-pub-3798659133542290"
+          data-ad-slot="6354626837"
+          data-ad-format="auto"
+          data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <p class="credits">
+      © 2025 <strong>Gabriel Sakala</strong><br>
+      In association with <strong>Kingsley Mudenda</strong><br>
+      Content powered by 
+      <a href="https://archive.org" target="_blank">Archive.org</a>
+    </p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
