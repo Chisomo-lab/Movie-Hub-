@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Adsense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <h1>🎬 Movie Hub Pro</h1>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search movies, anime, football...">
+      <button onclick="searchMovies()">🔍 Search</button>
+    </div>
+  </header>
+
+  <!-- Categories -->
+  <nav class="categories">
+    <button onclick="loadCategory('movies')">Movies</button>
+    <button onclick="loadCategory('cartoons')">Cartoons</button>
+    <button onclick="loadCategory('sports')">Football</button>
+    <button onclick="loadCategory('anime')">Anime</button>
+    <button onclick="loadCategory('popcorn')">Popcorn Picks</button>
+    <button onclick="loadCategory('television')">Television</button>
+  </nav>
+
+  <!-- Trending Section -->
+  <section id="trending">
+    <h2>🔥 Trending Now</h2>
+    <div class="scroll-container" id="trendingContainer"></div>
+  </section>
+
+  <!-- Main Grid -->
+  <main>
+    <h2 id="categoryTitle">Movies</h2>
+    <div class="grid" id="movieGrid"></div>
+  </main>
+
+  <footer>
+    <p>© Gabriel Sakala & Kingsley Mudenda | Powered by <a href="https://archive.org" target="_blank">archive.org</a></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
