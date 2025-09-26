@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <h1>Movie Hub Pro</h1>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search movies...">
+      <button id="searchBtn">Search</button>
+    </div>
+  </header>
+
+  <nav id="categoryBar">
+    <button onclick="filterCategory('moviesandfilms')">Movies & Films</button>
+    <button onclick="filterCategory('sports')">Sports</button>
+    <button onclick="filterCategory('television')">Television</button>
+    <button onclick="filterCategory('animationandcartoons')">Cartoons</button>
+    <button onclick="filterCategory('anime')">Anime</button>
+  </nav>
+
+  <!-- Trending Sections -->
+  <section class="trending">
+    <h2>Trending Movies</h2>
+    <div class="movie-carousel" id="trendingMovies"></div>
+  </section>
+
+  <section class="trending">
+    <h2>Trending Sports</h2>
+    <div class="movie-carousel" id="trendingSports"></div>
+  </section>
+
+  <section class="trending">
+    <h2>Trending Cartoons</h2>
+    <div class="movie-carousel" id="trendingCartoons"></div>
+  </section>
+
+  <section class="trending">
+    <h2>Trending Anime</h2>
+    <div class="movie-carousel" id="trendingAnime"></div>
+  </section>
+
+  <section class="trending">
+    <h2>Trending Television</h2>
+    <div class="movie-carousel" id="trendingTelevision"></div>
+  </section>
+
+  <!-- Ad Section -->
+  <section id="ad1">
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center;"
+         data-ad-format="auto"
+         data-full-width-responsive="true"
+         data-ad-client="ca-pub-3798659133542290"
+         data-ad-slot="6354626837"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </section>
+
+  <!-- Main Grid -->
+  <section id="movieGrid">
+    <h2>All Movies</h2>
+    <div class="grid" id="allMovies"></div>
+  </section>
+
+  <!-- Acknowledgement -->
+  <p style="text-align:center; color:#aaa; margin-top:10px;">
+    © Movie Hub Pro by Gabriel Sakala & Alex Carter. In association with Kingsley Mudenda. Videos fetched from Archive.org.
+  </p>
+
+  <footer>
+    <div class="footer-nav">
+      <span>Home</span>
+      <span>Categories</span>
+      <span>Favorites</span>
+      <span>Settings</span>
+    </div>
+
+    <ins class="adsbygoogle"
+         style="display:block; text-align:center;"
+         data-ad-format="auto"
+         data-full-width-responsive="true"
+         data-ad-client="ca-pub-3798659133542290"
+         data-ad-slot="6354626837"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
