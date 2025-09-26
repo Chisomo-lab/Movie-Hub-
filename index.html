@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Hub Pro</title>
+<link rel="stylesheet" href="style.css">
+<!-- Adsense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290"
+  crossorigin="anonymous"></script>
+<style>
+body {
+  background-color: #111;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+header {
+  background-color: #222;
+  padding: 10px;
+  text-align: center;
+}
+header h1 {
+  color: red;
+  margin: 0;
+}
+.search-bar {
+  margin-top: 5px;
+}
+.search-bar input {
+  width: 70%;
+  padding: 5px;
+  border-radius: 4px;
+  border: none;
+}
+.search-bar button {
+  padding: 5px 10px;
+  border: none;
+  background-color: red;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.categories {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background-color: #222;
+  padding: 10px 0;
+}
+.categories button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.category-section {
+  margin: 20px;
+}
+.category-section h2 {
+  margin: 0 0 10px 10px;
+  color: red;
+}
+.horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+.horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.horizontal-scroll::-webkit-scrollbar-thumb {
+  background-color: red;
+  border-radius: 3px;
+}
+.card {
+  flex: 0 0 180px;
+  font-size: 12px;
+  background-color: #222;
+  border-radius: 8px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+.card .buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 5px;
+}
+.card .buttons a {
+  flex: 1;
+  text-decoration: none;
+  color: #fff;
+  background-color: red;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #222;
+  color: #fff;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎬 Movie Hub Pro</h1>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search movies, anime, football...">
+    <button onclick="searchVideos()">🔍 Search</button>
+  </div>
+</header>
+
+<nav class="categories">
+  <button onclick="scrollToCategory('movies')">Movies</button>
+  <button onclick="scrollToCategory('sports')">Sports</button>
+  <button onclick="scrollToCategory('cartoons')">Cartoons</button>
+  <button onclick="scrollToCategory('anime')">Anime</button>
+  <button onclick="scrollToCategory('popcorn')">Popcorn</button>
+  <button onclick="scrollToCategory('television')">Television</button>
+</nav>
+
+<!-- Trending -->
+<section class="category-section">
+  <h2>🔥 Trending Now</h2>
+  <div class="horizontal-scroll" id="trendingSection"></div>
+</section>
+
+<!-- Categories -->
+<section class="category-section">
+  <h2>🎬 Movies</h2>
+  <div class="horizontal-scroll" id="moviesSection"></div>
+</section>
+
+<section class="category-section">
+  <h2>⚽ Sports</h2>
+  <div class="horizontal-scroll" id="sportsSection"></div>
+</section>
+
+<section class="category-section">
+  <h2>🎨 Cartoons</h2>
+  <div class="horizontal-scroll" id="cartoonsSection"></div>
+</section>
+
+<section class="category-section">
+  <h2>🌀 Anime</h2>
+  <div class="horizontal-scroll" id="animeSection"></div>
+</section>
+
+<section class="category-section">
+  <h2>🍿 Popcorn</h2>
+  <div class="horizontal-scroll" id="popcornSection"></div>
+</section>
+
+<section class="category-section">
+  <h2>📺 Television</h2>
+  <div class="horizontal-scroll" id="televisionSection"></div>
+</section>
+
+<footer>
+© Gabriel Sakala & Kingsley Mudenda | Mirrored from <a href="https://archive.org" target="_blank" style="color:red;">Archive.org</a>
+</footer>
+
+<script>
+const COLLECTIONS = {
+  movies: "moviesandfilms",
+  cartoons: "animationandcartoons",
+  sports: "sports",
+  anime: "anime",
+  popcorn: "popcornproject",
+  television: "television"
+};
+
+let shownIds = new Set();
+let pages = {
+  movies:0, sports:0, cartoons:0, anime:0, popcorn:0, television:0
+};
+
+async function fetchVideos(collection, page=0, sort="downloads desc"){
+  const start = page*20;
+  const url = `https://archive.org/advancedsearch.php?q=collection:${collection}&output=json&rows=20&fl[]=identifier,title,creator,year,description,downloads&sort[]=${encodeURIComponent(sort)}&start=${start}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.response.docs.map(v=>({
+    identifier:v.identifier,
+    title:v.title,
+    creator:v.creator||"Unknown",
+    year:v.year||"N/A",
+    description:v.description||""
+  }));
+}
+
+function renderVideos(items, containerId){
+  const container = document.getElementById(containerId);
+  items.forEach(item=>{
+    if(shownIds.has(item.identifier)) return;
+    shownIds.add(item.identifier);
+    const div = document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
+      <img src="https://archive.org/services/img/${item.identifier}" alt="${item.title}">
+      <h3>${item.title}</h3>
+      <p>${item.creator} (${item.year})</p>
+      <div class="buttons">
+        <a href="https://archive.org/details/${item.identifier}" target="_blank">▶ Stream</a>
+        <a href="https://archive.org/download/${item.identifier}" target="_blank">⬇ Download</a>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+async function loadCategory(cat){
+  pages[cat]=0;
+  const items = await fetchCategory(cat, pages[cat]);
+  renderVideos(items, cat+"Section");
+}
+
+async function fetchCategory(cat,page){
+  let vids = [];
+  if(cat==="sports"){
+    vids = await fetchVideos(COLLECTIONS[cat],page,"year desc");
+    const football = vids.filter(v=>/\bfootball\b/i.test(v.title)).sort((a,b)=>b.year-a.year);
+    const others = vids.filter(v=>!/\bfootball\b/i.test(v.title)).sort((a,b)=>b.year-a.year);
+    return [...football,...others];
+  } else if(cat==="anime"){
+    vids = await fetchVideos(COLLECTIONS[cat],page,"downloads desc");
+  } else{
+    vids = await fetchVideos(COLLECTIONS[cat],page,"downloads desc");
+  }
+  return vids;
+}
+
+async function loadTrending(){
+  const trendingContainer = document.getElementById("trendingSection");
+  trendingContainer.innerHTML="";
+  const categories=["movies","cartoons","sports","anime","popcorn","television"];
+  for(let cat of categories){
+    const vids = await fetchCategory(cat,0);
+    renderVideos(vids.slice(0,3),"trendingSection");
+    renderVideos(vids.slice(0,5),cat+"Section"); // initial few items per category
+  }
+}
+
+// Infinite scroll for each category
+window.addEventListener("scroll", async ()=>{
+  const scrollBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+  if(!scrollBottom) return;
+  for(let cat in COLLECTIONS){
+    pages[cat]++;
+    const more = await fetchCategory(cat,pages[cat]);
+    renderVideos(more,cat+"Section");
+  }
+});
+
+// Search
+async function searchVideos(){
+  const term=document.getElementById("searchInput").value.trim();
+  if(!term) return;
+  const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(term)}&output=json&rows=20&fl[]=identifier,title,creator,year,description,downloads`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const results = data.response.docs.map(v=>({
+    identifier:v.identifier,
+    title:v.title,
+    creator:v.creator||"Unknown",
+    year:v.year||"N/A",
+    description:v.description||""
+  }));
+  shownIds.clear();
+  for(let cat of Object.keys(COLLECTIONS)){
+    document.getElementById(cat+"Section").innerHTML="";
+  }
+  renderVideos(results,"moviesSection");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function scrollToCategory(cat){
+  document.getElementById(cat+"Section").scrollIntoView({behavior:"smooth"});
+}
+
+// Initial load
+loadTrending();
+</script>
+
+</body>
+</html>
