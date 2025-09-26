@@ -1,0 +1,77 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+  margin: 0;
+}
+
+header {
+  text-align: center;
+  padding: 1rem;
+  background: #222;
+}
+
+.search-bar {
+  margin-top: 0.5rem;
+}
+
+.search-bar input {
+  padding: 0.5rem;
+  width: 60%;
+}
+
+.search-bar button {
+  padding: 0.5rem 1rem;
+  margin-left: 0.3rem;
+  background: red;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.categories {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  background: #000;
+  padding: 0.8rem;
+}
+
+.categories button {
+  background: #e50914;
+  border: none;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.card {
+  background: #222;
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.scroll-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
