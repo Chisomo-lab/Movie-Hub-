@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Hub Pro</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3798659133542290" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <h1>Movie Hub Pro</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="sports.html">Sports</a></li>
+        <li><a href="movies.html">Movies</a></li>
+        <li><a href="cartoons.html">Cartoons</a></li>
+        <li><a href="tv.html">Television</a></li>
+      </ul>
+    </nav>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search movies...">
+      <button onclick="searchMovies()">Search</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="featured">
+      <h2>Trending</h2>
+      <div class="grid" id="trendingMovies"></div>
+    </section>
+
+    <section id="movieGrid">
+      <h2>Mixed Categories</h2>
+      <div class="grid" id="allMovies"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© Movie Hub Pro by Gabriel Sakala & Alex Carter. In association with Kingsley Mudenda. Videos fetched from Archive.org.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
