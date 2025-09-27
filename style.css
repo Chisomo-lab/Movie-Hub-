@@ -1,0 +1,20 @@
+* { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
+body { background:#000; color:#fff; }
+.search-container { display:flex; justify-content:center; padding:10px; background:#fff; }
+.search-container input { width:250px; padding:5px 10px; border-radius:5px; border:1px solid #ccc; }
+.search-container button { background:#E10600; border:none; color:#fff; padding:6px 12px; border-radius:5px; margin-left:5px; cursor:pointer; }
+.nav-bar { display:flex; justify-content:center; background:#111; padding:10px; gap:15px; }
+.nav-bar .nav-btn { background:none; border:none; color:#E10600; font-weight:bold; cursor:pointer; }
+.adsense { margin:10px auto; display:flex; justify-content:center; }
+.trending-container { display:flex; overflow-x:auto; gap:10px; padding:10px; scroll-behavior:smooth; }
+.trending-container::-webkit-scrollbar { height:8px; }
+.trending-container::-webkit-scrollbar-thumb { background:#E10600; border-radius:4px; }
+#home-previews { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; margin:20px; }
+.video-card { background:#111; border-radius:5px; padding:5px; cursor:pointer; }
+.video-card img { width:100%; border-radius:5px; }
+.video-card h3 { font-size:1em; margin:5px 0; }
+.video-card button { background:#E10600; border:none; color:#fff; margin:2px; padding:5px 8px; border-radius:3px; cursor:pointer; }
+.category { margin:20px; display:none; }
+.category h2 { color:#E10600; margin-bottom:10px; }
+.category-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; }
+footer { background:#111; text-align:center; padding:15px 0; font-size:0.9em; margin-top:20px; }
