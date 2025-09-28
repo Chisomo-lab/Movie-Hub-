@@ -1,0 +1,142 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+}
+
+.app-header {
+  text-align: center;
+  padding: 15px 0;
+  font-size: 2rem;
+  color: #e50914;
+}
+
+.navbar {
+  background: #141414;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  margin: 0;
+  gap: 20px;
+}
+
+.navbar li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.search-section {
+  display: flex;
+  justify-content: center;
+  padding: 15px;
+  background: #222;
+}
+
+.search-section input {
+  width: 70%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px 0 0 5px;
+}
+
+.search-section button {
+  padding: 10px 15px;
+  border: none;
+  background: #e50914;
+  color: white;
+  cursor: pointer;
+  border-radius: 0 5px 5px 0;
+}
+
+.trending-section {
+  padding: 20px;
+}
+
+.trending-section h2 {
+  margin-bottom: 10px;
+}
+
+.trending-row {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+}
+
+.category {
+  padding: 20px;
+}
+
+.category h2 {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.video-card {
+  background: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.video-card img {
+  width: 100%;
+  display: block;
+}
+
+.video-card h3 {
+  font-size: 0.9rem;
+  margin: 8px;
+  color: #fff;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-container button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-container button:first-child {
+  background: #e50914;
+  color: #fff;
+}
+
+.btn-container button:last-child {
+  background: #444;
+  color: #fff;
+}
+
+.adsense-block {
+  margin: 20px auto;
+  text-align: center;
+}
+
+footer {
+  background: #141414;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: gray;
+}
