@@ -13,6 +13,7 @@ const batchSize = 8;
 const homeContainer = document.getElementById('home');
 const categoriesContainer = document.getElementById('categories');
 const trendingContainer = document.getElementById('trending');
+
 async function fetchVideos(category){
   if(videosData[category]) return;
   videosData[category] = [];
@@ -26,6 +27,7 @@ async function fetchVideos(category){
     }
   }
 }
+
 function createVideoCard(video){
   const card = document.createElement('div');
   card.className = 'video-card';
@@ -45,6 +47,7 @@ function createVideoCard(video){
   card.appendChild(downloadBtn);
   return card;
 }
+
 function renderVideos(category, container){
   const start = loadedCount[category];
   const end = Math.min(start + batchSize, videosData[category].length);
@@ -56,6 +59,7 @@ function renderVideos(category, container){
   container.appendChild(grid);
   loadedCount[category] = end;
 }
+
 async function showHome(){
   currentCategory = 'home';
   homeContainer.style.display = 'block';
@@ -72,6 +76,7 @@ async function showHome(){
     homeContainer.appendChild(section);
   }
 }
+
 async function showCategory(cat){
   currentCategory = cat;
   homeContainer.style.display = 'none';
@@ -86,37 +91,26 @@ async function showCategory(cat){
   categoriesContainer.appendChild(section);
   renderVideos(cat, section);
 }
-window.onscroll = function(){
-  if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50){
+
+document.getElementById('content-container').onscroll = function(){
+  const container = document.getElementById('content-container');
+  if((container.scrollTop + container.clientHeight) >= container.scrollHeight - 50){
     if(currentCategory !== 'home' && loadedCount[currentCategory] < videosData[currentCategory].length){
       const section = categoriesContainer.querySelector('section');
       renderVideos(currentCategory, section);
     }
   }
 };
+
 document.querySelectorAll('#navBar li').forEach(li => {
   li.onclick = () => {
     if(li.dataset.cat === 'home') showHome();
     else showCategory(li.dataset.cat);
   };
 });
+
 document.getElementById('searchBtn').onclick = async () => {
   const term = document.getElementById('searchInput').value.toLowerCase();
   currentCategory = 'home';
   homeContainer.style.display = 'none';
   categoriesContainer.innerHTML = '';
-  trendingContainer.innerHTML = '';
-  for(const cat in collections){
-    await fetchVideos(cat);
-    const section = document.createElement('section');
-    const h2 = document.createElement('h2');
-    h2.textContent = `Search results in ${cat.toUpperCase()}`;
-    section.appendChild(h2);
-    const grid = document.createElement('div');
-    grid.className = 'category-grid';
-    videosData[cat].filter(v => v.title.toLowerCase().includes(term)).forEach(v => grid.appendChild(createVideoCard(v)));
-    section.appendChild(grid);
-    categoriesContainer.appendChild(section);
-  }
-};
-showHome();
